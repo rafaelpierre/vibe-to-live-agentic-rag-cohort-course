@@ -6,7 +6,17 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
       "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "configureZshAsDefaultShell": true,
+      "username": "root"
     }
+  },
+  
+  "containerEnv": {
+    "UV_LINK_MODE": "copy"
   },
   
   "customizations": {
@@ -20,6 +30,7 @@
         "charliermarsh.ruff"
       ],
       "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
         "python.defaultInterpreterPath": "/usr/local/bin/python",
         "python.linting.enabled": true,
         "python.linting.ruffEnabled": true,
