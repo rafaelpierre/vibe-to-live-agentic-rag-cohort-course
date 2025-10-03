@@ -195,26 +195,22 @@ Work directly in your browser or your favorite IDE with zero local setup!
    - Click **Code** → **Codespaces** → **Create codespace on week1**
    - Wait for devcontainer to build (~2 minutes)
 
-2. **Add your API keys to `.env`**
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your keys:
-   # OPENAI_API_KEY=sk-proj-...
-   # QDRANT_URL=https://xyz.cloud.qdrant.io
-   # QDRANT_API_KEY=your-qdrant-key
-   ```
+2. **Add your API keys to as Github Codespace Secret Variables**
 
-3. **Populate Qdrant with sample data**
+- [Check out this video for instructions if needed](https://www.loom.com/share/515a4091dfa244178d02e0229d40a024?sid=ac40868f-6d78-4179-b504-d08c19c0ba5c)
+   
+
+4. **Populate Qdrant with sample data**
    ```bash
    python scripts/setup_qdrant.py
    ```
 
-4. **Start the application**
+5. **Start the application**
    ```bash
    docker-compose up
    ```
 
-5. **Access the app**
+6. **Access the app**
    - Codespaces will automatically forward port 8000
    - Click the popup notification or go to **Ports** tab
    - Open the forwarded URL in your browser
@@ -403,7 +399,7 @@ print(response.json())
 ### API Key Issues
 
 **Problem**: `AuthenticationError: Invalid API key`
-- **Solution**: Double-check your `.env` file has the correct keys (no quotes, no spaces)
+- **Solution**: Double-check your Github Codespace secret variables
 
 **Problem**: `Qdrant connection failed`
 - **Solution**: Verify your Qdrant Cloud URL and API key are correct
