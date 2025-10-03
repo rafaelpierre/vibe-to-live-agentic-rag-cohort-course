@@ -136,7 +136,7 @@ The repository structure evolves each week as you add more capabilities:
 **Week 1:**
 ```
 production-ai-agents/
-├── 📁 app/                      # Core application code
+├── 📁 src/                      # Core application code
 │   ├── main.py                  # FastAPI entry point
 │   ├── config.py                # Configuration
 │   ├── 📁 agents/               # Agent implementations
@@ -169,55 +169,55 @@ production-ai-agents/
 ## 🚀 Getting Started
 
 ### Prerequisites
+#### GitHub Codespaces
 
-- **Docker Desktop** installed ([Download here](https://www.docker.com/products/docker-desktop))
-- **OpenAI API key** ([Get one here](https://platform.openai.com/api-keys))
-- **Qdrant Cloud account** (free tier) ([Sign up here](https://cloud.qdrant.io/))
+Work directly in your browser or your favorite IDE with zero local setup!
 
-No Python installation needed! Docker handles everything.
+- **What it is**: A complete dev environment in the cloud with Docker, Python, and all dependencies pre-installed
+- **Why use it**: No local installation needed, works on any device, consistent environment for all students
+- **IDE support**: Works seamlessly with VS Code (web or desktop) and Cursor
+- **Free tier**: 60 hours/month for free on GitHub
+
+**How to use:**
+1. Click the **Code** button on the GitHub repo
+2. Select **Codespaces** tab
+3. Click **Create codespace on week1** (or current branch)
+4. Wait ~2 minutes for the devcontainer to build
+5. Start coding! All dependencies are already installed
+
+[📖 Learn more about GitHub Codespaces](https://docs.github.com/en/codespaces/overview)
+
+> **Pro tip**: You can open your Codespace in VS Code Desktop or Cursor by clicking the menu (three lines) → "Open in..." → "VS Code Desktop" or use the Cursor extension.
 
 ### Setup (5 Minutes)
 
-1. **Clone this repository**
-   ```bash
-   git clone https://github.com/yourusername/production-ai-agents.git
-   cd production-ai-agents
-   ```
+1. **Create a Codespace**
+   - Click **Code** → **Codespaces** → **Create codespace on week1**
+   - Wait for devcontainer to build (~2 minutes)
 
-2. **Checkout the week you're working on**
-   ```bash
-   git checkout week1    # Start here
-   # git checkout week2  # Advance when ready
-   # git checkout week3  # Deploy to production
-   ```
-
-3. **Create environment file**
+2. **Add your API keys to `.env`**
    ```bash
    cp .env.example .env
+   # Edit .env and add your keys:
+   # OPENAI_API_KEY=sk-proj-...
+   # QDRANT_URL=https://xyz.cloud.qdrant.io
+   # QDRANT_API_KEY=your-qdrant-key
    ```
 
-4. **Add your API keys to `.env`**
-   ```bash
-   OPENAI_API_KEY=sk-proj-...
-   QDRANT_URL=https://xyz.cloud.qdrant.io
-   QDRANT_API_KEY=your-qdrant-key
-   ```
-
-5. **Populate Qdrant with sample data** (first time only)
+3. **Populate Qdrant with sample data**
    ```bash
    python scripts/setup_qdrant.py
    ```
 
-6. **Start the application**
+4. **Start the application**
    ```bash
    docker-compose up
    ```
 
-7. **Verify it's running**
-   - Open your browser: http://localhost:8000
-   - API docs: http://localhost:8000/docs
-
-That's it! You're ready to build. 🎉
+5. **Access the app**
+   - Codespaces will automatically forward port 8000
+   - Click the popup notification or go to **Ports** tab
+   - Open the forwarded URL in your browser
 
 ---
 
@@ -239,7 +239,8 @@ The `examples/` folder contains standalone scripts to help you understand each c
 
 ```bash
 # Install dependencies locally (if running examples outside Docker)
-pip install -r requirements.txt
+# With uv (recommended)
+uv sync
 
 # Run any example
 python examples/01_openai_agents_basics.py
@@ -250,8 +251,8 @@ python examples/01_openai_agents_basics.py
 ### Documentation Links
 
 **OpenAI Agents SDK**
-- [Official Documentation](https://platform.openai.com/docs/assistants/overview)
-- [Cookbook Examples](https://cookbook.openai.com/)
+- [Official Documentation](https://openai.github.io/openai-agents-python/)
+- [Cookbook Examples](https://github.com/openai/openai-agents-python/tree/main/examples)
 
 **Qdrant Vector Database**
 - [Getting Started Guide](https://qdrant.tech/documentation/quick-start/)
@@ -312,6 +313,111 @@ Build a **RAG agent** that can answer questions about a knowledge base using:
 
 ---
 
+## 🛠️ Development Workflow
+
+### Running the Application
+
+```bash
+# Start all services
+docker-compose up
+
+# Start in detached mode (background)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop services
+docker-compose down
+```
+
+### Making Changes
+
+The `app/` directory is mounted as a volume, so changes you make are reflected immediately (hot reload enabled).
+
+1. Edit code in `app/`
+2. Save file
+3. FastAPI automatically reloads
+4. Test at http://localhost:8000/docs
+
+### Common Commands
+
+```bash
+# Rebuild containers after changing dependencies
+docker-compose up --build
+
+# Run tests
+docker-compose exec app pytest
+
+# Access container shell
+docker-compose exec app /bin/bash
+
+# Check Python version
+docker-compose exec app python --version
+```
+
+---
+
+## 🧪 Testing Your Agent
+
+### Via FastAPI Docs (Recommended)
+
+1. Go to http://localhost:8000/docs
+2. Click on `POST /chat`
+3. Click "Try it out"
+4. Enter your question in the request body
+5. Click "Execute"
+
+### Via curl
+
+```bash
+curl -X POST "http://localhost:8000/chat" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is the company policy on remote work?"}'
+```
+
+### Via Python
+
+```python
+import requests
+
+response = requests.post(
+    "http://localhost:8000/chat",
+    json={"message": "What is the company policy on remote work?"}
+)
+print(response.json())
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Docker Issues
+
+**Problem**: `Cannot connect to Docker daemon`
+- **Solution**: Make sure Docker Desktop is running
+
+**Problem**: `Port 8000 already in use`
+- **Solution**: Stop other services using port 8000, or change the port in `docker-compose.yml`
+
+### API Key Issues
+
+**Problem**: `AuthenticationError: Invalid API key`
+- **Solution**: Double-check your `.env` file has the correct keys (no quotes, no spaces)
+
+**Problem**: `Qdrant connection failed`
+- **Solution**: Verify your Qdrant Cloud URL and API key are correct
+
+### Agent Issues
+
+**Problem**: Agent returns irrelevant answers
+- **Solution**: Check your vector search implementation - are you retrieving the right documents?
+
+**Problem**: Agent takes too long to respond
+- **Solution**: Limit the number of documents retrieved (try top_k=3 instead of 10)
+
+---
+
 ## 🎓 What's Next?
 
 After completing each week, advance to the next branch:
@@ -331,7 +437,7 @@ Each week builds on the previous, so make sure to complete assignments in order!
 
 **Want the full experience?** [Join the course at buildingaiagents.com](https://buildingaiagents.com) for:
 - Live instruction and Q&A sessions
-- 1-on-1 mentorship with Rafael
+- 1-on-1 mentorship with Rafael Pierre
 - Slack community support
 - $400 in free OpenAI credits
 - Certificate of completion
@@ -343,7 +449,7 @@ Each week builds on the previous, so make sure to complete assignments in order!
 ### During the Course
 
 - **Slack Community**: Ask questions, share progress, get help from peers and instructors
-- **1-on-1 Sessions**: Schedule 30-minute sessions with Rafael
+- **1-on-1 Sessions**: Schedule 30-minute sessions with the instructor (Rafael)
 
 ### Self-Study
 
@@ -363,13 +469,13 @@ MIT License - feel free to use this template for learning and building your own 
 
 This repository is part of **[From Vibe to Live: Build and Deploy Production AI Agents](https://buildingaiagents.com)**, a 4-week cohort-based course where you learn to:
 
-- ✨ Build multi-agent systems with OpenAI Agents SDK and Qdrant
+- ✨ Build multi-agent systems with OpenAI Agents SDK
 - 🚀 Deploy to Azure with Docker and FastAPI
 - 📊 Implement observability with Phoenix Arize
 - 🛡️ Add guardrails for security and reliability
 - 💼 Create portfolio-ready projects
 
-**Taught by Rafael Pierre** - 17+ years in Software Engineering, Data and AI, ex-Hugging Face, Databricks
+**Taught by [Rafael Pierre](https://www.linkedin.com/in/rafaelpierre)** - 17+ years in Software Engineering, Data and AI, ex-Hugging Face, Databricks
 
 [**Enroll now at buildingaiagents.com** →](https://buildingaiagents.com)
 
