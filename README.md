@@ -1,95 +1,168 @@
-# 🚀 Production AI Agents - Week 1 Starter Template
+# 🚀 From Vibe to Live: Build and Deploy Production AI Agents
 
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.118.0+-green.svg)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
-![OpenAI](https://img.shields.io/badge/OpenAI-Agents%20SDK-412991.svg)
-![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20DB-DC244C.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-Agents%20SDK-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-DC244C?style=for-the-badge&logo=qdrant&logoColor=white)
+![Phoenix](https://img.shields.io/badge/Phoenix-Arize-FF6B35?style=for-the-badge&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 **Build production-grade AI agents from day one**
 
-[Course Website](https://buildingaiagents.com) • [Documentation](#getting-started) • [Examples](#examples)
+[Course Website](https://buildingaiagents.com) • [Week 1](#week-1-rag-agent-foundations) • [Week 2](#week-2-multi-agent-orchestration) • [Week 3](#week-3-production-deployment) • [Week 4](#week-4-capstone)
 
 </div>
 
 ---
 
-## 📖 About This Template
+## 📖 About This Repository
 
-This is the **Week 1 starter template** for the [Production AI Agents Course](https://buildingaiagents.com). You'll build a **Dockerized RAG agent** that queries a knowledge base using OpenAI's Agents SDK and Qdrant vector database.
+This is the **official code repository** for the [From Vibe to Live: Production AI Agents Course](https://buildingaiagents.com). 
 
-Unlike typical AI tutorials that stop at Jupyter notebooks, this template teaches you to build **production-ready applications from day one** using Docker, FastAPI, and industry best practices.
+Each week builds incrementally on the previous, culminating in a **production-deployed AI agent** with observability, guardrails, and enterprise-grade architecture.
 
-### 🎯 What You'll Build
+### 🗂️ Repository Structure
 
-By the end of Week 1, you'll have:
-- ✅ A working RAG agent that answers questions from a knowledge base
-- ✅ RESTful API powered by FastAPI
-- ✅ Fully containerized application with Docker
-- ✅ Vector search using Qdrant Cloud
-- ✅ Proper error handling and logging
-- ✅ Foundation for multi-agent orchestration (Weeks 2-4)
+This repo uses **branches for each week**:
 
-### 🏗️ Architecture
+- **`week1`** → RAG Agent Foundations
+- **`week2`** → Multi-Agent Orchestration
+- **`week3`** → Production Deployment + Observability
+- **`week4`** → Capstone Project Templates
+- **`solutions/`** → Reference implementations for each week
 
+**To switch weeks:**
+```bash
+git checkout week1    # Start with foundations
+git checkout week2    # Move to orchestration
+git checkout week3    # Deploy to production
+git checkout week4    # Build your capstone
 ```
-┌─────────────┐      ┌──────────────┐      ┌─────────────┐
-│   Client    │─────▶│   FastAPI    │─────▶│   OpenAI    │
-│  (Browser)  │      │   Backend    │      │  Agents SDK │
-└─────────────┘      └──────────────┘      └─────────────┘
-                            │
-                            ▼
-                     ┌──────────────┐
-                     │    Qdrant    │
-                     │  Vector DB   │
-                     └──────────────┘
+
+---
+
+## 🎯 Weekly Learning Path
+
+### Week 1: RAG Agent Foundations
+**Branch:** `week1`
+
+Build a Dockerized RAG agent that queries a knowledge base.
+
+**What you'll build:**
+- ✅ Single RAG agent with vector search
+- ✅ FastAPI REST API
+- ✅ Fully containerized with Docker
+- ✅ Qdrant Cloud integration
+
+---
+
+### Week 2: Multi-Agent Orchestration
+**Branch:** `week2`
+
+Extend your agent into a multi-agent system with specialized roles.
+
+**What you'll add:**
+- Router agent (intent classification)
+- Retrieval agent (vector search specialist)
+- Synthesis agent (response generation)
+- Multi-tool coordination
+
+---
+
+### Week 3: Production Deployment + Observability
+**Branch:** `week3`
+
+Deploy to Azure with full observability and guardrails.
+
+**What you'll add:**
+- Azure Container Apps deployment
+- Phoenix Arize observability
+- Prompt injection detection
+- Response validation guardrails
+- Cost tracking and monitoring
+
+---
+
+### Week 4: Capstone Project
+**Branch:** `week4`
+
+Build your own production-grade agent with advanced features.
+
+**Options:**
+- Enhanced enterprise assistant with memory
+- Domain-specific agent (legal, medical, code)
+- Advanced multi-agent workflows
+- CI/CD pipeline with GitHub Actions
+
+---
+
+### 🏗️ Architecture Evolution
+
+**Week 1 - Simple RAG Agent:**
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#0EA5E9','primaryTextColor':'#fff','primaryBorderColor':'#0284C7','lineColor':'#64748B','secondaryColor':'#8B5CF6','tertiaryColor':'#10B981'}}}%%
+graph TD
+    A["🌐 Client<br/>Browser"] -->|"📤 HTTP Request"| B["⚡ FastAPI<br/>Backend"]
+    B -->|"🔗 Exposes"| C["🤖 OpenAI<br/>Agents SDK"]
+    C -->|"🔍 Vector Search"| D["💾 Qdrant<br/>Vector DB"]
+    C -->|"💬 LLM Calls"| E["✨ GPT-4o"]
+    
+    style A fill:#0EA5E9,stroke:#0284C7,stroke-width:3px,color:#fff
+    style B fill:#10B981,stroke:#059669,stroke-width:3px,color:#fff
+    style C fill:#8B5CF6,stroke:#7C3AED,stroke-width:3px,color:#fff
+    style D fill:#DC2626,stroke:#B91C1C,stroke-width:3px,color:#fff
+    style E fill:#F59E0B,stroke:#D97706,stroke-width:3px,color:#fff
+    
+    linkStyle 0 stroke:#0EA5E9,stroke-width:2px
+    linkStyle 1 stroke:#10B981,stroke-width:2px
+    linkStyle 2 stroke:#DC2626,stroke-width:2px
+    linkStyle 3 stroke:#F59E0B,stroke-width:2px
 ```
+
+**Week 2** adds multiple specialized agents (Router, Retrieval, Synthesis)  
+**Week 3** adds observability layer (Phoenix Arize), guardrails, and Azure deployment  
+**Week 4** showcases advanced patterns based on your capstone project
 
 ---
 
 ## 🗂️ Project Structure
 
+The repository structure evolves each week as you add more capabilities:
+
+**Week 1:**
 ```
-production-ai-agents-week1/
-├── 📁 app/
-│   ├── main.py                 # FastAPI application entry point
-│   ├── config.py               # Configuration and environment variables
-│   ├── 📁 agents/
-│   │   ├── __init__.py
-│   │   └── rag_agent.py        # RAG agent implementation (TODO: you build this!)
-│   ├── 📁 tools/
-│   │   ├── __init__.py
-│   │   └── vector_search.py    # Qdrant integration (TODO: you build this!)
-│   └── 📁 schemas/
-│       ├── __init__.py
-│       └── requests.py         # Pydantic models for API requests/responses
-│
-├── 📁 examples/
-│   ├── 01_openai_agents_basics.py       # Learn OpenAI Agents SDK fundamentals
-│   ├── 02_qdrant_ingestion.py           # How to ingest documents into Qdrant
-│   ├── 03_qdrant_search.py              # How to search vectors in Qdrant
-│   ├── 04_docker_basics.md              # Docker crash course
-│   └── 05_complete_rag_example.py       # Full RAG flow (reference implementation)
-│
-├── 📁 data/
-│   └── sample_docs/                     # Sample documents for testing
-│
-├── 📁 scripts/
-│   └── setup_qdrant.py                  # Script to populate Qdrant with sample data
-│
-├── 📁 tests/
-│   └── test_api.py                      # Basic API tests
-│
-├── .env.example                         # Environment variables template
-├── .gitignore
-├── docker-compose.yml                   # Local development with Docker
-├── Dockerfile                           # Production-ready container
-├── requirements.txt                     # Python dependencies
-└── README.md                            # You are here!
+production-ai-agents/
+├── 📁 app/                      # Core application code
+│   ├── main.py                  # FastAPI entry point
+│   ├── config.py                # Configuration
+│   ├── 📁 agents/               # Agent implementations
+│   └── 📁 tools/                # Agent tools (vector search, etc.)
+├── 📁 examples/                 # Learning examples
+├── 📁 data/                     # Sample documents
+├── 📁 scripts/                  # Setup and utility scripts
+└── 📁 tests/                    # Tests
 ```
+
+**Week 2** adds:
+- `app/agents/router_agent.py` - Intent classification
+- `app/agents/synthesis_agent.py` - Response generation
+- Multi-agent orchestration patterns
+
+**Week 3** adds:
+- `app/observability/` - Phoenix Arize integration
+- `app/guardrails/` - Security and validation
+- `.github/workflows/` - CI/CD pipelines
+- Azure deployment configurations
+
+**Week 4** varies:
+- Custom agents based on your capstone project
+- Advanced features (memory, caching, etc.)
+
+> **View full structure:** Check each branch to see how the project evolves.
 
 ---
 
@@ -107,33 +180,40 @@ No Python installation needed! Docker handles everything.
 
 1. **Clone this repository**
    ```bash
-   git clone <your-repo-url>
-   cd production-ai-agents-week1
+   git clone https://github.com/yourusername/production-ai-agents.git
+   cd production-ai-agents
    ```
 
-2. **Create environment file**
+2. **Checkout the week you're working on**
+   ```bash
+   git checkout week1    # Start here
+   # git checkout week2  # Advance when ready
+   # git checkout week3  # Deploy to production
+   ```
+
+3. **Create environment file**
    ```bash
    cp .env.example .env
    ```
 
-3. **Add your API keys to `.env`**
+4. **Add your API keys to `.env`**
    ```bash
    OPENAI_API_KEY=sk-proj-...
    QDRANT_URL=https://xyz.cloud.qdrant.io
    QDRANT_API_KEY=your-qdrant-key
    ```
 
-4. **Populate Qdrant with sample data** (optional, for testing)
+5. **Populate Qdrant with sample data** (first time only)
    ```bash
    python scripts/setup_qdrant.py
    ```
 
-5. **Start the application**
+6. **Start the application**
    ```bash
    docker-compose up
    ```
 
-6. **Verify it's running**
+7. **Verify it's running**
    - Open your browser: http://localhost:8000
    - API docs: http://localhost:8000/docs
 
@@ -141,7 +221,9 @@ That's it! You're ready to build. 🎉
 
 ---
 
-## 📚 Examples
+## 📚 Learning Resources
+
+### Examples (Week 1+)
 
 The `examples/` folder contains standalone scripts to help you understand each component:
 
@@ -163,20 +245,42 @@ pip install -r requirements.txt
 python examples/01_openai_agents_basics.py
 ```
 
-💡 **Pro tip**: Start with the examples to understand each piece, then implement your agent in `app/agents/rag_agent.py`.
+💡 **Pro tip**: Start with the examples to understand each piece, then implement your solution in the `app/` directory.
+
+### Documentation Links
+
+**OpenAI Agents SDK**
+- [Official Documentation](https://platform.openai.com/docs/assistants/overview)
+- [Cookbook Examples](https://cookbook.openai.com/)
+
+**Qdrant Vector Database**
+- [Getting Started Guide](https://qdrant.tech/documentation/quick-start/)
+- [Python Client Docs](https://python-client.qdrant.tech/)
+
+**FastAPI**
+- [Official Tutorial](https://fastapi.tiangolo.com/tutorial/)
+- [Best Practices](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
+
+**Docker**
+- [Docker Crash Course](./examples/04_docker_basics.md) (included in this repo)
+- [Official Documentation](https://docs.docker.com/)
 
 ---
 
-## 🎯 Week 1 Assignment
+## 🎯 Current Week Assignment
 
-### Your Mission
+> **Note:** Assignment details vary by branch. Switch to the appropriate week's branch to see specific requirements.
+
+### Week 1 Assignment: Build a RAG Agent
+
+**Your Mission:**
 
 Build a **RAG agent** that can answer questions about a knowledge base using:
 1. OpenAI Agents SDK for agent orchestration
 2. Qdrant for vector search
 3. FastAPI for the REST API
 
-### Implementation Checklist
+**Implementation Checklist:**
 
 - [ ] **Implement `app/agents/rag_agent.py`**
   - Create an agent using OpenAI Agents SDK
@@ -198,150 +302,39 @@ Build a **RAG agent** that can answer questions about a knowledge base using:
   - Verify responses are relevant and accurate
   - Test error handling (invalid queries, API failures)
 
-### Deliverable
+**Deliverable:**
 
-Record a **2-3 minute video** showing:
 1. Your Docker container running (`docker-compose up`)
 2. Making API requests via FastAPI docs or curl
 3. Your agent successfully answering questions
 4. Brief code walkthrough of your implementation
+5. (Optional) Record a **2-3 minute video** showing the above
 
 ---
 
-## 🛠️ Development Workflow
+## 🎓 What's Next?
 
-### Running the Application
+After completing each week, advance to the next branch:
 
 ```bash
-# Start all services
-docker-compose up
+# Completed Week 1? Move to Week 2:
+git checkout week2
 
-# Start in detached mode (background)
-docker-compose up -d
+# Completed Week 2? Move to Week 3:
+git checkout week3
 
-# View logs
-docker-compose logs -f app
-
-# Stop services
-docker-compose down
+# Ready for your capstone?
+git checkout week4
 ```
 
-### Making Changes
+Each week builds on the previous, so make sure to complete assignments in order!
 
-The `app/` directory is mounted as a volume, so changes you make are reflected immediately (hot reload enabled).
-
-1. Edit code in `app/`
-2. Save file
-3. FastAPI automatically reloads
-4. Test at http://localhost:8000/docs
-
-### Common Commands
-
-```bash
-# Rebuild containers after changing dependencies
-docker-compose up --build
-
-# Run tests
-docker-compose exec app pytest
-
-# Access container shell
-docker-compose exec app /bin/bash
-
-# Check Python version
-docker-compose exec app python --version
-```
-
----
-
-## 🧪 Testing Your Agent
-
-### Via FastAPI Docs (Recommended)
-
-1. Go to http://localhost:8000/docs
-2. Click on `POST /chat`
-3. Click "Try it out"
-4. Enter your question in the request body
-5. Click "Execute"
-
-### Via curl
-
-```bash
-curl -X POST "http://localhost:8000/chat" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "What is the company policy on remote work?"}'
-```
-
-### Via Python
-
-```python
-import requests
-
-response = requests.post(
-    "http://localhost:8000/chat",
-    json={"message": "What is the company policy on remote work?"}
-)
-print(response.json())
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Docker Issues
-
-**Problem**: `Cannot connect to Docker daemon`
-- **Solution**: Make sure Docker Desktop is running
-
-**Problem**: `Port 8000 already in use`
-- **Solution**: Stop other services using port 8000, or change the port in `docker-compose.yml`
-
-### API Key Issues
-
-**Problem**: `AuthenticationError: Invalid API key`
-- **Solution**: Double-check your `.env` file has the correct keys (no quotes, no spaces)
-
-**Problem**: `Qdrant connection failed`
-- **Solution**: Verify your Qdrant Cloud URL and API key are correct
-
-### Agent Issues
-
-**Problem**: Agent returns irrelevant answers
-- **Solution**: Check your vector search implementation - are you retrieving the right documents?
-
-**Problem**: Agent takes too long to respond
-- **Solution**: Limit the number of documents retrieved (try top_k=3 instead of 10)
-
----
-
-## 📖 Learning Resources
-
-### OpenAI Agents SDK
-- [Official Documentation](https://platform.openai.com/docs/assistants/overview)
-- [Cookbook Examples](https://cookbook.openai.com/)
-
-### Qdrant Vector Database
-- [Getting Started Guide](https://qdrant.tech/documentation/quick-start/)
-- [Python Client Docs](https://python-client.qdrant.tech/)
-
-### FastAPI
-- [Official Tutorial](https://fastapi.tiangolo.com/tutorial/)
-- [Best Practices](https://fastapi.tiangolo.com/tutorial/bigger-applications/)
-
-### Docker
-- [Docker Crash Course](./examples/04_docker_basics.md) (included in this repo)
-- [Official Documentation](https://docs.docker.com/)
-
----
-
-## 🎓 Next Steps
-
-After completing Week 1:
-
-- **Week 2**: Multi-agent orchestration with specialized agents (router, retrieval, synthesis)
-- **Week 3**: Deploy to Azure with observability and guardrails
-- **Week 4**: Build your own production-grade agent (capstone project)
-
-Want to learn more? [Join the full course at buildingaiagents.com](https://buildingaiagents.com)
+**Want the full experience?** [Join the course at buildingaiagents.com](https://buildingaiagents.com) for:
+- Live instruction and Q&A sessions
+- 1-on-1 mentorship with Rafael
+- Slack community support
+- $400 in free OpenAI credits
+- Certificate of completion
 
 ---
 
@@ -350,8 +343,7 @@ Want to learn more? [Join the full course at buildingaiagents.com](https://build
 ### During the Course
 
 - **Slack Community**: Ask questions, share progress, get help from peers and instructors
-- **1-on-1 Sessions**: Schedule 30-minute sessions with the instructor (Rafael Pierre)
-- **Office Hours**: Weekly live sessions for Q&A
+- **1-on-1 Sessions**: Schedule 30-minute sessions with Rafael
 
 ### Self-Study
 
@@ -369,9 +361,9 @@ MIT License - feel free to use this template for learning and building your own 
 
 ## 🌟 About the Course
 
-This template is part of **[From Vibe to Live: Build and Deploy Production AI Agents](https://buildingaiagents.com)**, a 4-week cohort-based course where you learn to:
+This repository is part of **[From Vibe to Live: Build and Deploy Production AI Agents](https://buildingaiagents.com)**, a 4-week cohort-based course where you learn to:
 
-- ✨ Build multi-agent systems with OpenAI Agents SDK
+- ✨ Build multi-agent systems with OpenAI Agents SDK and Qdrant
 - 🚀 Deploy to Azure with Docker and FastAPI
 - 📊 Implement observability with Phoenix Arize
 - 🛡️ Add guardrails for security and reliability
@@ -387,6 +379,6 @@ This template is part of **[From Vibe to Live: Build and Deploy Production AI Ag
 
 **Built with ❤️ for production AI**
 
-[Course](https://buildingaiagents.com) • [Examples](#examples) • [Troubleshooting](#troubleshooting)
+[Course](https://buildingaiagents.com) • [Examples](#learning-resources) • [Troubleshooting](#troubleshooting)
 
 </div>
