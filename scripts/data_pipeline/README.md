@@ -39,15 +39,46 @@ uv run python fetch_fed_speeches.py --limit 5
 
 ### `ingest_fed_speeches.py`
 
-Ingests Federal Reserve speeches into Qdrant for the RAG system.
+Ingests Federal Reserve speeches into Qdrant using FastEmbed for vector embeddings.
+
+**Prerequisites:**
+Set environment variables:
+```bash
+export QDRANT_API_KEY="your-qdrant-api-key"
+export QDRANT_URL="https://your-cluster.qdrant.io"  # Optional
+```
 
 **Usage:**
 ```bash
-cd ../../backend
-uv run python ../scripts/data_pipeline/ingest_fed_speeches.py
+uv run python ingest_fed_speeches.py
 ```
 
 **What it does:**
+1. **Loads Fed speeches** from `../../data/fed_speeches/speeches.jsonl`
+2. **Connects to Qdrant Cloud** using your API key
+3. **Creates a collection** named `fed_speeches` with COSINE distance
+4. **Embeds documents** using the `BAAI/bge-small-en` model via FastEmbed
+5. **Uploads vectors and metadata** to Qdrant
+6. **Verifies ingestion** with a sample search
+
+**Collection Schema:**
+- **Collection name:** `fed_speeches`
+- **Embedding model:** `BAAI/bge-small-en`
+- **Vector size:** Automatically determined by the model
+- **Distance metric:** COSINE
+
+**Metadata Structure:**
+Each document includes:
+- `title`: Speech title
+- `url`: Original URL
+- `author`: Speaker name  
+- `subject`: Speech subject
+- `description`: Brief description
+- `category`: Document category (usually "Speech")
+- `pub_date`: Publication date
+- `content_length`: Character count
+- `scraped_at`: Timestamp when scraped
+- `document`: Full speech content text
 1. Reads speeches from `data/fed_speeches/speeches.jsonl`
 2. Chunks long speeches into manageable pieces (1000 chars with 200 char overlap)
 3. Generates embeddings using OpenAI

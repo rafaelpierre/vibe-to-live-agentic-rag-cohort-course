@@ -1,252 +1,205 @@
+#!/usr/bin/env python3
 """
-Ingest Federal Reserve Speeches into Qdrant
+Fed Speeches Ingestion Script for Qdrant with FastEmbed
 
-This script:
-1. Reads the scraped Fed speeches from JSONL file
-2. Chunks the speeches into manageable pieces
-3. Generates embeddings using OpenAI
-4. Creates/updates a Qdrant collection
-5. Uploads the speeches with metadata
-
-Usage:
-    cd backend
-    uv run python ../scripts/data_pipeline/ingest_fed_speeches.py
+This script ingests Federal Reserve speeches from JSONL files into Qdrant 
+using FastEmbed for vector embeddings.
 """
 
 import json
 import os
-import sys
-import uuid
+from typing import List, Dict, Any
 from pathlib import Path
-from typing import Any
 
-# Add backend/src to Python path
-backend_src = Path(__file__).parent.parent.parent / "backend" / "src"
-sys.path.insert(0, str(backend_src))
-
-try:
-    from openai import OpenAI
-    from qdrant_client import QdrantClient
-    from qdrant_client.models import Distance, PointStruct, VectorParams
-except ImportError:
-    print("❌ Error: Required packages not found.")
-    print("Please run from backend directory: cd backend && uv sync")
-    sys.exit(1)
+from qdrant_client import QdrantClient, models
 
 
-SPEECHES_FILE = (
-    Path(__file__).parent.parent.parent / "data" / "fed_speeches" / "speeches.jsonl"
-)
-CHUNK_SIZE = 1000  # Characters per chunk
-CHUNK_OVERLAP = 200  # Overlap between chunks
-
-
-def chunk_text(
-    text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
-) -> list[str]:
-    """
-    Split text into overlapping chunks.
-
-    Args:
-        text: Text to chunk
-        chunk_size: Target size for each chunk
-        overlap: Number of characters to overlap between chunks
-
-    Returns:
-        List of text chunks
-    """
-    if len(text) <= chunk_size:
-        return [text]
-
-    chunks = []
-    start = 0
-
-    while start < len(text):
-        end = start + chunk_size
-
-        # Try to break at a sentence or paragraph boundary
-        if end < len(text):
-            # Look for paragraph break
-            paragraph_break = text.rfind("\n\n", start, end)
-            if paragraph_break > start:
-                end = paragraph_break
-            else:
-                # Look for sentence break
-                sentence_break = text.rfind(". ", start, end)
-                if sentence_break > start:
-                    end = sentence_break + 1
-
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-
-        # Move start position with overlap
-        start = end - overlap if end < len(text) else end
-
-    return chunks
-
-
-def load_speeches(file_path: Path) -> list[dict[str, Any]]:
-    """
-    Load speeches from JSONL file.
-
-    Args:
-        file_path: Path to speeches JSONL file
-
-    Returns:
-        List of speech dictionaries
-    """
+def load_fed_speeches(data_path: str) -> List[Dict[str, Any]]:
+    """Load Federal Reserve speeches from JSONL file."""
     speeches = []
-
-    with open(file_path, "r", encoding="utf-8") as f:
+    
+    # Load the JSONL file
+    jsonl_path = Path(data_path) / "fed_speeches" / "speeches.jsonl"
+    
+    if not jsonl_path.exists():
+        raise FileNotFoundError(f"Speeches file not found at {jsonl_path}")
+    
+    with open(jsonl_path, 'r', encoding='utf-8') as f:
         for line in f:
-            speeches.append(json.loads(line))
-
+            speech = json.loads(line.strip())
+            speeches.append(speech)
+    
+    print(f"Loaded {len(speeches)} speeches from {jsonl_path}")
     return speeches
 
 
-def generate_embedding(text: str, client: OpenAI) -> list[float]:
-    """Generate embedding for text using OpenAI."""
-    response = client.embeddings.create(model="text-embedding-3-small", input=text)
-    return response.data[0].embedding
+def setup_qdrant_client() -> QdrantClient:
+    """Initialize Qdrant client with cloud configuration."""
+    # Get API key from environment variables
+    api_key = os.getenv("QDRANT_API_KEY")
+    if not api_key:
+        raise ValueError("QDRANT_API_KEY environment variable not set")
+    
+    # You'll need to replace this URL with your actual Qdrant cloud URL
+    qdrant_url = os.getenv("QDRANT_URL", "https://your-cluster.qdrant.io")
+    
+    client = QdrantClient(
+        url=qdrant_url,
+        api_key=api_key,
+    )
+    
+    return client
+
+
+def create_collection(client: QdrantClient, collection_name: str, model_name: str) -> None:
+    """Create a Qdrant collection with appropriate vector configuration."""
+    try:
+        # Check if collection already exists
+        collections = client.get_collections().collections
+        if any(collection.name == collection_name for collection in collections):
+            print(f"Collection '{collection_name}' already exists")
+            return
+        
+        # Create collection with vector configuration based on the embedding model
+        client.create_collection(
+            collection_name=collection_name,
+            vectors_config=models.VectorParams(
+                size=client.get_embedding_size(model_name),
+                distance=models.Distance.COSINE
+            ),
+        )
+        print(f"Created collection '{collection_name}' with model '{model_name}'")
+        
+    except Exception as e:
+        print(f"Error creating collection: {e}")
+        raise
+
+
+def prepare_documents_for_ingestion(speeches: List[Dict[str, Any]]) -> tuple:
+    """Prepare speeches data for Qdrant ingestion."""
+    docs = []
+    metadata = []
+    ids = []
+    
+    for i, speech in enumerate(speeches):
+        # Use the speech content as the document text
+        doc_text = speech.get("content", "")
+        
+        # Skip if no content
+        if not doc_text.strip():
+            continue
+        
+        docs.append(doc_text)
+        
+        # Prepare metadata (excluding the content to avoid duplication)
+        meta = {
+            "title": speech.get("title", ""),
+            "url": speech.get("url", ""),
+            "author": speech.get("author", ""),
+            "subject": speech.get("subject", ""),
+            "description": speech.get("description", ""),
+            "category": speech.get("category", ""),
+            "pub_date": speech.get("pub_date", ""),
+            "content_length": speech.get("content_length", 0),
+            "scraped_at": speech.get("scraped_at", ""),
+            "document": doc_text  # Include full document text in metadata for retrieval
+        }
+        metadata.append(meta)
+        
+        # Use incremental IDs starting from 1
+        ids.append(i + 1)
+    
+    print(f"Prepared {len(docs)} documents for ingestion")
+    return docs, metadata, ids
+
+
+def ingest_speeches_to_qdrant(
+    client: QdrantClient,
+    collection_name: str,
+    docs: List[str],
+    metadata: List[Dict[str, Any]],
+    ids: List[int],
+    model_name: str
+) -> None:
+    """Ingest prepared speeches into Qdrant collection."""
+    try:
+        # Upload documents using FastEmbed integration
+        client.upload_collection(
+            collection_name=collection_name,
+            vectors=[models.Document(text=doc, model=model_name) for doc in docs],
+            payload=metadata,
+            ids=ids,
+        )
+        print(f"Successfully ingested {len(docs)} documents into '{collection_name}'")
+        
+    except Exception as e:
+        print(f"Error ingesting documents: {e}")
+        raise
+
+
+def verify_ingestion(client: QdrantClient, collection_name: str) -> None:
+    """Verify that documents were successfully ingested."""
+    try:
+        collection_info = client.get_collection(collection_name)
+        point_count = collection_info.points_count
+        print(f"Collection '{collection_name}' now contains {point_count} points")
+        
+        # Perform a sample search to verify functionality
+        search_results = client.search(
+            collection_name=collection_name,
+            query_text="monetary policy",
+            limit=3
+        )
+        
+        print(f"Sample search returned {len(search_results)} results")
+        if search_results:
+            print(f"Top result score: {search_results[0].score:.4f}")
+            print(f"Top result title: {search_results[0].payload.get('title', 'N/A')}")
+        
+    except Exception as e:
+        print(f"Error verifying ingestion: {e}")
+        raise
 
 
 def main():
-    """Run the ingestion script."""
-    print("🏦 Federal Reserve Speeches → Qdrant Ingestion")
-    print("=" * 60)
-
-    # Check environment variables
-    required_vars = ["OPENAI_API_KEY", "QDRANT_URL", "QDRANT_API_KEY"]
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
-
-    if missing_vars:
-        print(f"❌ Error: Missing environment variables: {', '.join(missing_vars)}")
-        print("\nPlease set them in your .env file:")
-        print("  OPENAI_API_KEY=your-key-here")
-        print("  QDRANT_URL=your-qdrant-url")
-        print("  QDRANT_API_KEY=your-qdrant-key")
-        sys.exit(1)
-
-    # Check if speeches file exists
-    if not SPEECHES_FILE.exists():
-        print(f"❌ Error: Speeches file not found: {SPEECHES_FILE}")
-        print("\nPlease run the scraper first:")
-        print("  cd scripts/data_pipeline")
-        print("  uv run python fetch_fed_speeches.py")
-        sys.exit(1)
-
-    # Initialize clients
-    print("\n1️⃣ Initializing clients...")
-    openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    qdrant_client = QdrantClient(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-    )
-    print("   ✅ Clients initialized")
-
-    # Load speeches
-    print(f"\n2️⃣ Loading speeches from {SPEECHES_FILE.name}...")
-    speeches = load_speeches(SPEECHES_FILE)
-    print(f"   ✅ Loaded {len(speeches)} speeches")
-
-    # Create collection
-    collection_name = os.getenv("QDRANT_COLLECTION_NAME", "fed_speeches")
-    print(f"\n3️⃣ Setting up collection '{collection_name}'...")
-
+    """Main ingestion pipeline."""
+    # Configuration
+    DATA_PATH = "/Users/rafaelpierre/projects/vibe-to-live-agentic-rag-cohort-course/data"
+    COLLECTION_NAME = "fed_speeches"
+    MODEL_NAME = "BAAI/bge-small-en"
+    
     try:
-        qdrant_client.delete_collection(collection_name)
-        print("   🗑️  Deleted existing collection")
-    except Exception:
-        pass
-
-    qdrant_client.create_collection(
-        collection_name=collection_name,
-        vectors_config=VectorParams(
-            size=1536,  # text-embedding-3-small dimension
-            distance=Distance.COSINE,
-        ),
-    )
-    print("   ✅ Collection created")
-
-    # Process and upload speeches
-    print(f"\n4️⃣ Processing speeches and generating embeddings...")
-    points = []
-    total_chunks = 0
-
-    for i, speech in enumerate(speeches, 1):
-        print(f"\n   [{i}/{len(speeches)}] {speech['author']}: {speech['subject']}")
-        print(f"   Date: {speech['pub_date']}")
-
-        # Chunk the speech content
-        chunks = chunk_text(speech["content"])
-        print(f"   Chunks: {len(chunks)}")
-
-        for chunk_idx, chunk in enumerate(chunks):
-            # Generate embedding
-            embedding = generate_embedding(chunk, openai_client)
-
-            # Create point with metadata
-            point = PointStruct(
-                id=str(uuid.uuid4()),
-                vector=embedding,
-                payload={
-                    "content": chunk,
-                    "title": speech["title"],
-                    "author": speech["author"],
-                    "subject": speech["subject"],
-                    "url": speech["url"],
-                    "pub_date": speech["pub_date"],
-                    "category": speech["category"],
-                    "description": speech["description"],
-                    "chunk_index": chunk_idx,
-                    "total_chunks": len(chunks),
-                    "source": "Federal Reserve",
-                    "document_type": "speech",
-                },
-            )
-            points.append(point)
-            total_chunks += 1
-
-        print(f"   ✅ Processed {len(chunks)} chunks")
-
-    # Upload to Qdrant in batches
-    print(f"\n5️⃣ Uploading {total_chunks} chunks to Qdrant...")
-    batch_size = 100
-
-    for i in range(0, len(points), batch_size):
-        batch = points[i : i + batch_size]
-        qdrant_client.upsert(collection_name=collection_name, points=batch)
-        print(
-            f"   Uploaded batch {i // batch_size + 1}/{(len(points) - 1) // batch_size + 1}"
-        )
-
-    print(f"   ✅ Uploaded {total_chunks} chunks from {len(speeches)} speeches")
-
-    # Verify ingestion
-    print(f"\n6️⃣ Verifying ingestion...")
-    collection_info = qdrant_client.get_collection(collection_name)
-    print(f"   Collection: {collection_name}")
-    print(f"   Points: {collection_info.points_count}")
-    print(f"   Vector size: {collection_info.config.params.vectors.size}")
-
-    print("\n✅ Ingestion complete!")
-    print("\n📊 Summary:")
-    print(f"   Speeches: {len(speeches)}")
-    print(f"   Total chunks: {total_chunks}")
-    print(f"   Average chunks per speech: {total_chunks / len(speeches):.1f}")
-    print(f"   Collection: {collection_name}")
-
-    print("\n💡 Sample queries to try:")
-    print("   - What is the Federal Reserve's view on inflation?")
-    print("   - Tell me about recent monetary policy decisions")
-    print("   - What did Powell say about economic outlook?")
-    print("   - How is the Fed addressing payment innovation?")
-
-    print("\n🚀 Next steps:")
-    print("   1. Complete the Week 1 assignment in backend/src/")
-    print("   2. Test your implementation with: docker-compose up")
-    print("   3. Try the example queries at: http://localhost:8000/docs")
+        print("Starting Fed Speeches ingestion pipeline...")
+        
+        # Step 1: Load speeches data
+        print("\n1. Loading Fed speeches data...")
+        speeches = load_fed_speeches(DATA_PATH)
+        
+        # Step 2: Setup Qdrant client
+        print("\n2. Setting up Qdrant client...")
+        client = setup_qdrant_client()
+        
+        # Step 3: Create collection
+        print("\n3. Creating Qdrant collection...")
+        create_collection(client, COLLECTION_NAME, MODEL_NAME)
+        
+        # Step 4: Prepare documents
+        print("\n4. Preparing documents for ingestion...")
+        docs, metadata, ids = prepare_documents_for_ingestion(speeches)
+        
+        # Step 5: Ingest documents
+        print("\n5. Ingesting documents into Qdrant...")
+        ingest_speeches_to_qdrant(client, COLLECTION_NAME, docs, metadata, ids, MODEL_NAME)
+        
+        # Step 6: Verify ingestion
+        print("\n6. Verifying ingestion...")
+        verify_ingestion(client, COLLECTION_NAME)
+        
+        print("\n✅ Fed Speeches ingestion completed successfully!")
+        
+    except Exception as e:
+        print(f"\n❌ Error during ingestion: {e}")
+        raise
 
 
 if __name__ == "__main__":

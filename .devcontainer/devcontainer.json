@@ -27,7 +27,8 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "ms-azuretools.vscode-docker",
-        "charliermarsh.ruff"
+        "charliermarsh.ruff",
+        "teticio.python-envy"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
