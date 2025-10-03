@@ -6,15 +6,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from .agents.rag_agent import create_rag_agent
-from .config import settings
 from .schemas.requests import ChatRequest, ChatResponse, HealthResponse
 
 # Initialize FastAPI app
 app = FastAPI(
-    title=settings.app_name,
+    title="Agentic RAG API",
     description="Production-ready RAG API with OpenAI Agents SDK",
     version="0.1.0",
-    debug=settings.debug,
+    debug=True,
 )
 
 # Configure CORS
