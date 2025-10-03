@@ -47,6 +47,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "openai-agents" },
     { name = "pydantic" },
+    { name = "pydantic-settings" },
     { name = "qdrant-client" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -65,6 +66,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.118.0" },
     { name = "openai-agents", specifier = ">=0.3.3" },
     { name = "pydantic", specifier = ">=2.11.9" },
+    { name = "pydantic-settings", specifier = ">=2.7.1" },
     { name = "qdrant-client", specifier = ">=1.15.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.37.0" },
 ]
