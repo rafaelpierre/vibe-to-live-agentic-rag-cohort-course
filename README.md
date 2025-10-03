@@ -148,13 +148,13 @@ production-ai-agents/
 ```
 
 **Week 2** adds:
-- `app/agents/router_agent.py` - Intent classification
-- `app/agents/synthesis_agent.py` - Response generation
+- `src/agents/router_agent.py` - Intent classification
+- `src/agents/synthesis_agent.py` - Response generation
 - Multi-agent orchestration patterns
 
 **Week 3** adds:
-- `app/observability/` - Phoenix Arize integration
-- `app/guardrails/` - Security and validation
+- `src/observability/` - Phoenix Arize integration
+- `src/guardrails/` - Security and validation
 - `.github/workflows/` - CI/CD pipelines
 - Azure deployment configurations
 
@@ -246,7 +246,7 @@ uv sync
 python examples/01_openai_agents_basics.py
 ```
 
-💡 **Pro tip**: Start with the examples to understand each piece, then implement your solution in the `app/` directory.
+💡 **Pro tip**: Start with the examples to understand each piece, then implement your solution in the `src/` directory.
 
 ### Documentation Links
 
@@ -283,17 +283,17 @@ Build a **RAG agent** that can answer questions about a knowledge base using:
 
 **Implementation Checklist:**
 
-- [ ] **Implement `app/agents/rag_agent.py`**
+- [ ] **Implement `src/agents/rag_agent.py`**
   - Create an agent using OpenAI Agents SDK
   - Define a tool for searching the knowledge base
   - Handle user queries and generate responses
 
-- [ ] **Implement `app/tools/vector_search.py`**
+- [ ] **Implement `src/tools/vector_search.py`**
   - Connect to Qdrant Cloud
   - Implement vector similarity search
   - Return relevant documents with metadata
 
-- [ ] **Create API endpoint in `app/main.py`**
+- [ ] **Create API endpoint in `src/main.py`**
   - `POST /chat` endpoint that accepts a question
   - Call your RAG agent
   - Return the agent's response
@@ -333,9 +333,9 @@ docker-compose down
 
 ### Making Changes
 
-The `app/` directory is mounted as a volume, so changes you make are reflected immediately (hot reload enabled).
+The `src/` directory is mounted as a volume, so changes you make are reflected immediately (hot reload enabled).
 
-1. Edit code in `app/`
+1. Edit code in `src/`
 2. Save file
 3. FastAPI automatically reloads
 4. Test at http://localhost:8000/docs
