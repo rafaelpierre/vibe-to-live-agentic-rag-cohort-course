@@ -11,9 +11,7 @@ vibe-to-live-agentic-rag-cohort-course/
 ├── .devcontainer/
 │   └── devcontainer.json          ✅ Dev container with uv, Docker, Zsh
 ├── .gitignore                      ✅ Python/Docker ignores
-├── .env.example                    ✅ Environment variable template
 ├── README.md                       ✅ Main course documentation
-├── QUICKSTART.md                   ✅ 5-minute quick start guide
 ├── ASSIGNMENT_CHECKLIST.md         ✅ Week 1 assignment checklist
 ├── Dockerfile                      ✅ Production-ready Docker image
 ├── docker-compose.yml              ✅ Local development orchestration
@@ -43,68 +41,13 @@ vibe-to-live-agentic-rag-cohort-course/
 │       └── test_vector_search.py  ✅ Tool tests (commented)
 │
 ├── examples/
-│   ├── 01_openai_agents_basics.py      ✅ OpenAI Agents intro
-│   ├── 02_qdrant_ingestion.py          ✅ Document ingestion
-│   ├── 03_qdrant_search.py             ✅ Vector search demo
-│   ├── 04_docker_basics.md             ✅ Docker cheatsheet
-│   ├── 05_complete_rag_example.py      ✅ Reference implementation
-│   └── 06_api_testing_guide.md         ✅ API testing examples
+│   ├── 01_openai_agents_hello_world.py      ✅ OpenAI Agents intro
+│   └── 02_qdrant_search.py                  ✅ Document ingestion
 │
-├── data/
-│   └── sample_docs/
-│       ├── openai_agents_guide.md      ✅ Sample document
-│       ├── rag_fundamentals.md         ✅ Sample document
-│       ├── qdrant_overview.md          ✅ Sample document
-│       ├── fastapi_intro.md            ✅ Sample document
-│       ├── docker_basics.md            ✅ Sample document
-│       └── production_ai.md            ✅ Sample document
 │
-└── scripts/
-    └── setup_qdrant.py                 ✅ Qdrant setup script
+└── scripts/data_pipeline
+    └── ingest_fed_speeches.py                 ✅ Qdrant setup script
 ```
-
-### 🎯 Student Assignment (TODOs)
-
-Students need to implement:
-
-1. **`backend/src/tools/vector_search.py`** - Vector search tool
-   - Initialize clients
-   - Generate embeddings
-   - Perform vector search
-   - Format results
-
-2. **`backend/src/agents/rag_agent.py`** - RAG agent
-   - Initialize agent
-   - Configure instructions and tools
-   - Implement chat method
-   - Handle conversation threading
-
-3. **`backend/src/main.py`** - FastAPI endpoints
-   - Initialize agent on startup
-   - Implement `/chat` endpoint
-   - Error handling
-
-### 📚 Learning Resources Provided
-
-- **6 example Python scripts** showing:
-  - OpenAI Agents SDK basics
-  - Qdrant ingestion and search
-  - Complete RAG reference implementation
-  
-- **7 markdown documents** covering:
-  - Course overview and architecture
-  - Quick start guide
-  - Assignment checklist
-  - Docker basics
-  - API testing guide
-  
-- **6 sample documents** for the knowledge base:
-  - OpenAI Agents guide
-  - RAG fundamentals
-  - Qdrant overview
-  - FastAPI introduction
-  - Docker basics
-  - Production AI considerations
 
 ### 🛠️ Infrastructure
 
@@ -113,39 +56,6 @@ Students need to implement:
 - **Docker**: Production-ready Dockerfile and docker-compose.yml
 - **Testing**: Pytest setup with placeholder tests
 - **Linting**: Ruff configured for code quality
-
-## 🚀 Next Steps for Students
-
-1. **Setup** (15 minutes)
-   - Open in GitHub Codespaces
-   - Configure `.env` with API keys
-   - Run `scripts/setup_qdrant.py`
-
-2. **Learn** (1-2 hours)
-   - Run all example scripts
-   - Read documentation
-   - Understand the architecture
-
-3. **Implement** (3-4 hours)
-   - Complete TODOs in vector_search.py
-   - Complete TODOs in rag_agent.py
-   - Complete TODOs in main.py
-
-4. **Test** (30 minutes)
-   - Test with uvicorn locally
-   - Test with Docker
-   - Verify all endpoints work
-
-## 📊 Success Metrics
-
-A successful Week 1 submission includes:
-
-- ✅ All TODOs implemented
-- ✅ `/health` endpoint returns healthy status
-- ✅ `/chat` endpoint accepts queries and returns answers
-- ✅ Answers are based on retrieved documents
-- ✅ Application runs in Docker
-- ✅ Code is clean and well-documented
 
 ## 🎓 What Students Learn
 
@@ -176,48 +86,38 @@ By completing Week 1, students will understand:
    - Error handling
    - Code organization
 
-## 🔮 Week 2 Preview
+## Appendix: Syncing your branch with the assignment repo
 
-In Week 2, students will:
-- Add comprehensive testing
-- Implement monitoring and logging
-- Add error tracking
-- Performance optimization
-- CI/CD basics
+To sync your fork branch (e.g. `feature/week1-rafael`) with the original repo's branch `feature/week1`, follow these steps:
 
-## 📝 Notes for Instructors
+* Make sure you have the original repo added as the upstream remote (Only do this once if not already added):
 
-### Time Estimates
-- Setup: 15-30 minutes
-- Learning phase: 1-2 hours  
-- Implementation: 3-4 hours
-- Testing: 30-60 minutes
-- **Total: 5-7 hours**
+```
+git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPO.git
+```
 
-### Common Pitfalls to Watch For
-1. Environment variables not set correctly
-2. Forgetting to run setup_qdrant.py
-3. Not using async/await correctly
-4. Hardcoding values instead of using settings
-5. Not handling errors gracefully
+* Fetch the latest changes from the original repo:
 
-### Grading Criteria Suggestions
-- Code quality: 30%
-- Functionality: 40%
-- Testing: 15%
-- Documentation: 15%
+```
+git fetch upstream
+```
 
-### Extension Ideas (Optional)
-- Add conversation history display
-- Implement streaming responses
-- Add source citation formatting
-- Create a simple web UI
-- Add caching for common queries
+* Checkout your branch locally:
 
----
+```
+git checkout feature/week1-rafael
+```
 
-**Status**: ✅ Week 1 Template Complete and Ready for Students
+* Merge or rebase the changes from the original branch into your branch:
 
-**Last Updated**: October 3, 2025
+```
+git merge upstream/feature/week1
+```
 
-**Branch**: feature/week1
+* Push the updated branch to your forked repo:
+
+```
+git push origin feature/week1-rafael
+```
+
+This keeps your `feature/week1-rafael` branch synced with the original `feature/week1` branch from the upstream repo.
