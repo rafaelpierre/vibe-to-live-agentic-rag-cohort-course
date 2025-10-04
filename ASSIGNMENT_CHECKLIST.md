@@ -6,9 +6,8 @@ Use this checklist to track your progress on the Week 1 assignment.
 
 - [ ] Created OpenAI account and got API key
 - [ ] Created Qdrant Cloud account and cluster
-- [ ] Opened project in GitHub Codespaces (or local dev container)
-- [ ] Copied `.env.example` to `.env` and filled in credentials
-- [ ] Ran setup script: `cd backend && uv run python ../scripts/setup_qdrant.py`
+- [ ] Opened project in GitHub Codespaces
+- [ ] Ran setup script: `cd backend && uv run python ../scripts/data_pipeline/ingest_fed_speeches.py`
 
 ## Learning Phase 📚
 
@@ -149,3 +148,6 @@ Run some tests with these prompts and share the results on Slack:
 - The goal is learning, not perfection!
 
 Good luck! 🎓
+
+
+
