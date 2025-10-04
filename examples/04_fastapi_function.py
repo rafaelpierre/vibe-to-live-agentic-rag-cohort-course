@@ -5,6 +5,9 @@ from agents import OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 import os
 from datetime import datetime
+from fastapi import FastAPI
+
+### Agent with Tool Call Implementation
 
 set_tracing_disabled(True)
 
@@ -16,7 +19,7 @@ def get_current_time() -> str:
     """Get the current time."""
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-async def main(prompt: str = "What is the current time?"):
+async def run_agent(prompt: str = "What is the current time?"):
     agent = Agent(
         name="Assistant",
         instructions="You are an agent that can call functions to get information.",
@@ -25,8 +28,15 @@ async def main(prompt: str = "What is the current time?"):
     )
 
     result = await Runner.run(agent, prompt)
-    print(result.final_output)
+    return result.final_output
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+### FastAPI Application
+
+app = FastAPI()
+
+@app.get("/ask")
+async def ask_agent(question: str):
+
+    result = await run_agent(prompt=question)
+    return {"answer": result}
