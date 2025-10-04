@@ -28,18 +28,17 @@ Each week builds incrementally on the previous, culminating in a **production-de
 
 This repo uses **branches for each week**:
 
-- **`week1`** → RAG Agent Foundations
-- **`week2`** → Multi-Agent Orchestration
-- **`week3`** → Production Deployment + Observability
-- **`week4`** → Capstone Project Templates
-- **`solutions/`** → Reference implementations for each week
+- **`feature/week1`** → RAG Agent Foundations
+- **`feature/week2`** → Multi-Agent Orchestration
+- **`feature/week3`** → Production Deployment + Observability
+- **`feature/week4`** → Capstone Project Templates
 
 **To switch weeks:**
 ```bash
-git checkout week1    # Start with foundations
-git checkout week2    # Move to orchestration
-git checkout week3    # Deploy to production
-git checkout week4    # Build your capstone
+git checkout feature/week1    # Start with foundations
+git checkout feature/week2    # Move to orchestration
+git checkout feature/week3    # Deploy to production
+git checkout feature/week4    # Build your capstone
 ```
 
 ---
@@ -47,7 +46,7 @@ git checkout week4    # Build your capstone
 ## 🎯 Weekly Learning Path
 
 ### Week 1: RAG Agent Foundations
-**Branch:** `week1`
+**Branch:** `feature/week1`
 
 Build a Dockerized RAG agent that queries a knowledge base.
 
@@ -60,7 +59,7 @@ Build a Dockerized RAG agent that queries a knowledge base.
 ---
 
 ### Week 2: Multi-Agent Orchestration
-**Branch:** `week2`
+**Branch:** `feature/week2`
 
 Extend your agent into a multi-agent system with specialized roles.
 
@@ -74,7 +73,7 @@ Extend your agent into a multi-agent system with specialized roles.
 ---
 
 ### Week 3: Production Deployment + Observability
-**Branch:** `week3`
+**Branch:** `feature/week3`
 
 Deploy to Azure with full observability and guardrails.
 
@@ -88,7 +87,7 @@ Deploy to Azure with full observability and guardrails.
 ---
 
 ### Week 4: Capstone Project
-**Branch:** `week4`
+**Branch:** `feature/week4`
 
 Build your own production-grade agent with advanced features.
 
