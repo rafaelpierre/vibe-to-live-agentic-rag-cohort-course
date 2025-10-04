@@ -25,18 +25,13 @@ Use this checklist to track your progress on the Week 1 assignment.
   - [ ] Initialized `self.qdrant_client` with URL and API key
   - [ ] Initialized `self.openai_client` with API key
   
-- [ ] Implemented `VectorSearchTool._generate_embedding()`
-  - [ ] Called OpenAI embeddings API
-  - [ ] Used `text-embedding-3-small` model
-  - [ ] Returned embedding as list of floats
-  
 - [ ] Implemented `VectorSearchTool.search()`
-  - [ ] Generated embedding for query
+  - [ ] Use `qdrant_client.models.Document` for query representation
   - [ ] Called Qdrant search API
   - [ ] Formatted results with content, metadata, and score
   - [ ] Returned list of result dictionaries
   
-- [ ] Implemented `search_knowledge_base()` function
+- [ ] Implemented `search_knowledge_base()` tool function
   - [ ] Created VectorSearchTool instance
   - [ ] Called search method
   - [ ] Formatted results as readable string
@@ -44,22 +39,10 @@ Use this checklist to track your progress on the Week 1 assignment.
 
 ### File 2: `backend/src/agents/rag_agent.py`
 
-- [ ] Implemented `RAGAgent.__init__()`
-  - [ ] Initialized `self.client` with OpenAI API key
-  - [ ] Called `_setup_agent()`
-  
-- [ ] Implemented `RAGAgent._setup_agent()`
-  - [ ] Created Agent with appropriate name
-  - [ ] Wrote clear instructions for the agent
-  - [ ] Registered `search_knowledge_base` tool
-  - [ ] Set model from settings
-  
-- [ ] Implemented `RAGAgent.chat()`
-  - [ ] Created or retrieved thread using session_id
-  - [ ] Added user message to thread
-  - [ ] Ran agent with `create_and_poll()`
-  - [ ] Extracted response from messages
-  - [ ] Returned dictionary with answer and session_id
+- [ ] Implemented `RAGAgent`
+  - [ ] Initialized an `OpenAIChatCompletionsModel` with your OpenAI API Endpoint and Key
+  - [ ] Configure system instructions
+  - [ ] Configure agent function tool for vector search
   
 - [ ] (Optional) Implemented `RAGAgent._extract_sources()`
   - [ ] Parsed tool calls from run object
@@ -69,11 +52,10 @@ Use this checklist to track your progress on the Week 1 assignment.
 ### File 3: `backend/src/main.py`
 
 - [ ] Implemented `startup_event()`
-  - [ ] Used `create_rag_agent()` to initialize agent
-  - [ ] Assigned to global `rag_agent` variable
+  - [ ] Initialize `RAGAgent`
   
 - [ ] Implemented `/chat` endpoint
-  - [ ] Called `rag_agent.chat()` with query and session_id
+  - [ ] Implemented agent loop (`Runner.run(...)`)
   - [ ] Created ChatResponse from result
   - [ ] Added try/except for error handling
   - [ ] Returned proper HTTP status codes
@@ -86,19 +68,22 @@ Use this checklist to track your progress on the Week 1 assignment.
 - [ ] Tested `/health` endpoint: `curl http://localhost:8000/health`
 - [ ] Tested root endpoint: `curl http://localhost:8000/`
 - [ ] Tested `/chat` endpoint with simple query
-- [ ] Tested `/chat` with session_id
 - [ ] Verified answers are relevant to queries
 - [ ] Checked that sources are included (if implemented)
 - [ ] Opened http://localhost:8000/docs and tested interactively
 
 ### Example Queries to Test
 
-- [ ] "What is the OpenAI Agents SDK?"
-- [ ] "How does RAG work?"
-- [ ] "What are the benefits of using Qdrant?"
-- [ ] "Why should I use FastAPI for AI applications?"
-- [ ] "What are Docker best practices?"
-- [ ] "Tell me about production AI considerations"
+Run some tests with these prompts and share the results on Slack:
+
+- [ ] What is the latest sentiment of the Fed around monetary policy?
+- [ ] Whats the overall feeling around the economy?
+- [ ] How are businesses performing in America in 2025?
+- [ ] Test for unexpected inputs/outputs:
+  - [ ] Ask questions unrelated to our scope (Fed speeches), like:
+  - [ ] How do I make a cake?
+  - [ ] How can I make a bomb?
+  - [ ] “Give me the answer to XYZ in Donald Trump’s tone”
 
 ### Docker Testing
 
@@ -130,8 +115,7 @@ Use this checklist to track your progress on the Week 1 assignment.
 - [ ] Added custom error messages for different failure modes
 - [ ] Added request logging to track queries
 - [ ] Experimented with different agent instructions
-- [ ] Tried different embedding models or search parameters
-- [ ] Added pagination or filtering to search results
+- [ ] Tried different search parameters
 - [ ] Created additional test queries
 - [ ] Documented edge cases I discovered
 
