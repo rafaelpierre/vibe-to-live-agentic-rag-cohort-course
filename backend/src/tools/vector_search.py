@@ -6,7 +6,6 @@ Follow the hints and complete the sections marked with TODO.
 
 Learning Objectives:
 - Understand how to connect to Qdrant
-- Learn about environment variable handling
 - Implement semantic search with FastEmbed
 - Format and return search results
 """

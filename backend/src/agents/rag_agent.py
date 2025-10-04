@@ -9,6 +9,11 @@ set_tracing_disabled(True)
 client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
 model = OpenAIChatCompletionsModel(openai_client=client, model="gpt-4.1")
 
+# The agent below should answer questions related to Federal Reserve speeches.
+# It is still incomplete:
+# - Add specific instructions for the agent to follow when answering questions.
+# - Add a function tool that performs vector search, and pass it to the agent
+# - Tip: there are different function tool execution modes
 
 async def main():
     agent = Agent(
