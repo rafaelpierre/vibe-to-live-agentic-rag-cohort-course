@@ -198,7 +198,7 @@ Work directly in your browser or your favorite IDE with zero local setup!
 
 2. Add your API keys as Codespace Secret Variables
 
-3. **Populate Qdrant with sample data**
+4. **Populate Qdrant with sample data**
    ```bash
    python scripts/data_pipeline/ingest_fed_speeches.py
    ```
