@@ -14,11 +14,8 @@ Use this checklist to track your progress on the Week 1 assignment.
 
 - [ ] Read the main README.md
 - [ ] Read `backend/README.md`
-- [ ] Read `examples/04_docker_basics.md`
-- [ ] Ran `examples/01_openai_agents_basics.py` and understood the code
+- [ ] Ran `examples/01_openai_agents_hello_world.py` and understood the code
 - [ ] Ran `examples/02_qdrant_ingestion.py` and understood the code
-- [ ] Ran `examples/03_qdrant_search.py` and understood the code
-- [ ] Reviewed `examples/05_complete_rag_example.py` (reference only)
 
 ## Implementation Phase 🔨
 

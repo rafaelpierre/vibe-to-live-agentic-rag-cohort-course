@@ -32,16 +32,13 @@ Your task is to complete the TODO sections in the following files:
 
 Implement the `VectorSearchTool` class:
 - [ ] Initialize Qdrant and OpenAI clients in `__init__()`
-- [ ] Implement `_generate_embedding()` to create embeddings
 - [ ] Implement `search()` to perform vector similarity search
 - [ ] Implement `search_knowledge_base()` tool function
 
 ### 2. `src/agents/rag_agent.py`
 
 Implement the `RAGAgent` class:
-- [ ] Initialize OpenAI client in `__init__()`
-- [ ] Set up the agent with instructions and tools in `_setup_agent()`
-- [ ] Implement `chat()` method to handle user queries
+- [ ] Set up the agent with instructions and tools
 - [ ] (Optional) Implement `_extract_sources()` for transparency
 
 ### 3. `src/main.py`
