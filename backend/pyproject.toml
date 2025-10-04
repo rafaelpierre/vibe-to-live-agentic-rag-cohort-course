@@ -8,7 +8,8 @@ dependencies = [
     "fastapi>=0.118.0",
     "openai-agents>=0.3.3",
     "pydantic>=2.11.9",
-    "qdrant-client>=1.15.1",
+    "pydantic-settings>=2.7.1",
+    "qdrant-client[fastembed]>=1.15.1",
     "uvicorn[standard]>=0.37.0",
 ]
 

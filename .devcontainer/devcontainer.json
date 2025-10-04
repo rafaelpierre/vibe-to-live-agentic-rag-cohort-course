@@ -1,6 +1,6 @@
 {
   "name": "Production AI Agents",
-  "image": "ghcr.io/astral-sh/uv:python3.11-bookworm",
+  "image": "ghcr.io/astral-sh/uv:python3.13-bookworm",
   
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
@@ -27,7 +27,7 @@
         "GitHub.copilot",
         "GitHub.copilot-chat",
         "ms-azuretools.vscode-docker",
-        "charliermarsh.ruff"
+        "teticio.python-envy"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
@@ -37,7 +37,7 @@
         "python.formatting.provider": "none",
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff",
-          "editor.formatOnSave": true,
+          "editor.formatOnSave": false,
           "editor.codeActionsOnSave": {
             "source.organizeImports": "explicit"
           }

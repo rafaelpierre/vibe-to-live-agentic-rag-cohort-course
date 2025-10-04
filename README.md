@@ -69,6 +69,7 @@ Extend your agent into a multi-agent system with specialized roles.
 - Retrieval agent (vector search specialist)
 - Synthesis agent (response generation)
 - Multi-tool coordination
+- Basic Observability with Phoenix Arize
 
 ---
 
@@ -79,7 +80,7 @@ Deploy to Azure with full observability and guardrails.
 
 **What you'll add:**
 - Azure Container Apps deployment
-- Phoenix Arize observability
+- Advanced Observability (LLM as a Judge, Trajectory Evaluation)
 - Prompt injection detection
 - Response validation guardrails
 - Cost tracking and monitoring
@@ -148,12 +149,12 @@ production-ai-agents/
 ```
 
 **Week 2** adds:
+- Multi-agent orchestration patterns
 - `src/agents/router_agent.py` - Intent classification
 - `src/agents/synthesis_agent.py` - Response generation
-- Multi-agent orchestration patterns
+- `src/observability/` - Phoenix Arize integration
 
 **Week 3** adds:
-- `src/observability/` - Phoenix Arize integration
 - `src/guardrails/` - Security and validation
 - `.github/workflows/` - CI/CD pipelines
 - Azure deployment configurations
@@ -195,25 +196,12 @@ Work directly in your browser or your favorite IDE with zero local setup!
    - Click **Code** → **Codespaces** → **Create codespace on week1**
    - Wait for devcontainer to build (~2 minutes)
 
-2. **Add your API keys to as Github Codespace Secret Variables**
-
-- [Check out this video for instructions if needed](https://www.loom.com/share/515a4091dfa244178d02e0229d40a024?sid=ac40868f-6d78-4179-b504-d08c19c0ba5c)
-   
+2. Add your API keys as Codespace Secret Variables
 
 4. **Populate Qdrant with sample data**
    ```bash
-   python scripts/setup_qdrant.py
+   python scripts/data_pipeline/ingest_fed_speeches.py
    ```
-
-5. **Start the application**
-   ```bash
-   docker-compose up
-   ```
-
-6. **Access the app**
-   - Codespaces will automatically forward port 8000
-   - Click the popup notification or go to **Ports** tab
-   - Open the forwarded URL in your browser
 
 ---
 
@@ -221,15 +209,7 @@ Work directly in your browser or your favorite IDE with zero local setup!
 
 ### Examples (Week 1+)
 
-The `examples/` folder contains standalone scripts to help you understand each component:
-
-| Example | Description | Run Time |
-|---------|-------------|----------|
-| `01_openai_agents_basics.py` | Learn OpenAI Agents SDK fundamentals | 5 mins |
-| `02_qdrant_ingestion.py` | Ingest documents into Qdrant vector DB | 10 mins |
-| `03_qdrant_search.py` | Perform vector similarity search | 5 mins |
-| `04_docker_basics.md` | Docker crash course for beginners | 10 mins |
-| `05_complete_rag_example.py` | Full RAG flow reference implementation | 15 mins |
+The `examples/` folder contains standalone scripts to help you understand each component
 
 **How to use examples:**
 
@@ -239,7 +219,7 @@ The `examples/` folder contains standalone scripts to help you understand each c
 uv sync
 
 # Run any example
-python examples/01_openai_agents_basics.py
+uv run python examples/01_openai_agents_hello_world.py
 ```
 
 💡 **Pro tip**: Start with the examples to understand each piece, then implement your solution in the `src/` directory.
@@ -276,141 +256,6 @@ Build a **RAG agent** that can answer questions about a knowledge base using:
 1. OpenAI Agents SDK for agent orchestration
 2. Qdrant for vector search
 3. FastAPI for the REST API
-
-**Implementation Checklist:**
-
-- [ ] **Implement `src/agents/rag_agent.py`**
-  - Create an agent using OpenAI Agents SDK
-  - Define a tool for searching the knowledge base
-  - Handle user queries and generate responses
-
-- [ ] **Implement `src/tools/vector_search.py`**
-  - Connect to Qdrant Cloud
-  - Implement vector similarity search
-  - Return relevant documents with metadata
-
-- [ ] **Create API endpoint in `src/main.py`**
-  - `POST /chat` endpoint that accepts a question
-  - Call your RAG agent
-  - Return the agent's response
-
-- [ ] **Test your agent**
-  - Ask questions about the sample knowledge base
-  - Verify responses are relevant and accurate
-  - Test error handling (invalid queries, API failures)
-
-**Deliverable:**
-
-1. Your Docker container running (`docker-compose up`)
-2. Making API requests via FastAPI docs or curl
-3. Your agent successfully answering questions
-4. Brief code walkthrough of your implementation
-5. (Optional) Record a **2-3 minute video** showing the above
-
----
-
-## 🛠️ Development Workflow
-
-### Running the Application
-
-```bash
-# Start all services
-docker-compose up
-
-# Start in detached mode (background)
-docker-compose up -d
-
-# View logs
-docker-compose logs -f app
-
-# Stop services
-docker-compose down
-```
-
-### Making Changes
-
-The `src/` directory is mounted as a volume, so changes you make are reflected immediately (hot reload enabled).
-
-1. Edit code in `src/`
-2. Save file
-3. FastAPI automatically reloads
-4. Test at http://localhost:8000/docs
-
-### Common Commands
-
-```bash
-# Rebuild containers after changing dependencies
-docker-compose up --build
-
-# Run tests
-docker-compose exec app pytest
-
-# Access container shell
-docker-compose exec app /bin/bash
-
-# Check Python version
-docker-compose exec app python --version
-```
-
----
-
-## 🧪 Testing Your Agent
-
-### Via FastAPI Docs (Recommended)
-
-1. Go to http://localhost:8000/docs
-2. Click on `POST /chat`
-3. Click "Try it out"
-4. Enter your question in the request body
-5. Click "Execute"
-
-### Via curl
-
-```bash
-curl -X POST "http://localhost:8000/chat" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "What is the company policy on remote work?"}'
-```
-
-### Via Python
-
-```python
-import requests
-
-response = requests.post(
-    "http://localhost:8000/chat",
-    json={"message": "What is the company policy on remote work?"}
-)
-print(response.json())
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Docker Issues
-
-**Problem**: `Cannot connect to Docker daemon`
-- **Solution**: Make sure Docker Desktop is running
-
-**Problem**: `Port 8000 already in use`
-- **Solution**: Stop other services using port 8000, or change the port in `docker-compose.yml`
-
-### API Key Issues
-
-**Problem**: `AuthenticationError: Invalid API key`
-- **Solution**: Double-check your Github Codespace secret variables
-
-**Problem**: `Qdrant connection failed`
-- **Solution**: Verify your Qdrant Cloud URL and API key are correct
-
-### Agent Issues
-
-**Problem**: Agent returns irrelevant answers
-- **Solution**: Check your vector search implementation - are you retrieving the right documents?
-
-**Problem**: Agent takes too long to respond
-- **Solution**: Limit the number of documents retrieved (try top_k=3 instead of 10)
 
 ---
 
@@ -454,6 +299,42 @@ Each week builds on the previous, so make sure to complete assignments in order!
 - Open an issue in this repository
 
 ---
+
+## Appendix: Syncing your branch with the assignment repo
+
+To sync your fork branch (e.g. `feature/week1-rafael`) with the original repo's branch `feature/week1`, follow these steps:
+
+* Make sure you have the original repo added as the upstream remote (Only do this once if not already added):
+
+```
+git remote add upstream https://github.com/ORIGINAL_OWNER/ORIGINAL_REPO.git
+```
+
+* Fetch the latest changes from the original repo:
+
+```
+git fetch upstream
+```
+
+* Checkout your branch locally:
+
+```
+git checkout feature/week1-rafael
+```
+
+* Merge or rebase the changes from the original branch into your branch:
+
+```
+git merge upstream/feature/week1
+```
+
+* Push the updated branch to your forked repo:
+
+```
+git push origin feature/week1-rafael
+```
+
+This keeps your `feature/week1-rafael` branch synced with the original `feature/week1` branch from the upstream repo.
 
 ## 📝 License
 

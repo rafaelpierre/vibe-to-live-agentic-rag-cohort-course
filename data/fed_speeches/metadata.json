@@ -1,0 +1,17 @@
+{
+  "total_speeches": 15,
+  "scraped_at": "2025-10-03T10:34:16.702532+00:00",
+  "source": "https://www.federalreserve.gov/feeds/speeches_and_testimony.xml",
+  "authors": [
+    "Barr",
+    "Bowman",
+    "Jefferson",
+    "Miran",
+    "Powell",
+    "Waller"
+  ],
+  "date_range": {
+    "earliest": "Fri, 1 Aug 2025 12:00:00 GMT",
+    "latest": "Wed, 20 Aug 2025 15:00:00 GMT"
+  }
+}
