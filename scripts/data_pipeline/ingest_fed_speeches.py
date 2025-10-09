@@ -82,7 +82,7 @@ def main():
         # Create payload with metadata
         payload.append({
             "title": speech.get("title", ""),
-            "speaker": speech.get("speaker", ""),
+            "speaker": speech.get("author", ""),  # Fixed: field is "author" in JSONL, not "speaker"
             "url": speech.get("url", ""),
             "description": speech.get("description", ""),
             "category": speech.get("category", ""),
