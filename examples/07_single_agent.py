@@ -16,13 +16,13 @@ import random
 
 # configure the Phoenix tracer
 tracer_provider = register(
-  project_name="paralell-tool-calls",
+  project_name="single-agent-sync-tool-calls",
   auto_instrument=True
 )
 
 from pydantic import BaseModel
 
-class SynthesizerOutput(BaseModel):
+class AgentOutput(BaseModel):
     synthesized_answer: str
     sources: list[str]
 
@@ -36,11 +36,12 @@ async def search(query: str, top_k: int = 1) -> str:
     """Mimicks a search engine for information based on the query.
     Args:
         query (str): The search query.
+        top_k (int, optional): The number of top results to return. Defaults to 1.
     Returns:
         str: The search results.
     """
 
-    await asyncio.sleep(3)  # Simulate API delay
+    await asyncio.sleep(1)  # Simulate API delay
 
     fed_speeches_synthetic = [
         "The time has come for policy to adjust. The direction of travel is clear, and the timing and pace of rate cuts will depend on incoming data, the evolving outlook, and the balance of risks.",
@@ -58,48 +59,31 @@ async def search(query: str, top_k: int = 1) -> str:
     search_results = {"result": random.choice(fed_speeches_synthetic) for _ in range(top_k)}
     return f"{datetime.now()} - Search results for '{query}': {search_results.get('result', 'No results found.')}."
 
-synthesizer_agent = Agent(
-  name="SynthesizerAgent",
+rag_agent = Agent(
+  name="RAGAgent",
   instructions=f"""
     {RECOMMENDED_PROMPT_PREFIX}
     You are a helpful assistant that synthesizes information from multiple sources
     to provide a comprehensive answer to the user's question.
-    Use the information retrieved by the QueryGeneratorAgent to formulate your response.
+    
+    Think step by step:
+
+    1. User will enter a question in natural language.
+    2. Understand the question and generate 3 different search queries that would help find relevant information.
+    3. Use the `search` tool to retrieve information for each of the generated queries.
+    4. Synthesize the information retrieved from the `search` tool calls to formulate a comprehensive response.
+    5. Provide the final answer along with the sources used.
     """,
   model=model,
-  output_type=SynthesizerOutput
-)
-
-query_agent = Agent(
-  name="QueryGeneratorAgent",
-  instructions="""
-    You are a helpful assistant that generates full text search queries based on
-    user input and retrieves information using the search tool.
-
-    Generate 3 different queries that would help find relevant information.
-
-    Example:
-
-    User Input: "What factors are driving the strength of the dollar?"
-
-    Generated Queries:
-      1. "factors driving dollar strength"
-      2. "impact of dollar strength on economy"
-      3. "historical trends in dollar strength"
-
-    After generating the queries, use the `search` tool to retrieve information
-    Finally, hand off the retrieved information to the SynthesizerAgent to formulate a comprehensive response.
-""",
-  model=model,
-  model_settings=ModelSettings(parallel_tool_calls=True),
-  tools=[search]
+  output_type=AgentOutput,
+  tools = [search],
+  model_settings=ModelSettings(tool_choice = "required")
 )
 
 
 async def main():
     user_input = "What factors are impacting interest rates?"
-    query_agent.handoffs = [synthesizer_agent]
-    result = await Runner.run(query_agent, user_input, session=session)
+    result = await Runner.run(rag_agent, user_input, session=session)
     print(result.final_output)
 
 if __name__ == "__main__":
