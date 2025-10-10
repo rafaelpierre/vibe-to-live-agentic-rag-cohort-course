@@ -8,6 +8,8 @@ from agents import (
 )
 from openai import AsyncOpenAI
 import os
+from datetime import datetime
+import asyncio
 
 # configure the Phoenix tracer
 tracer_provider = register(
@@ -24,14 +26,15 @@ async def get_weather(location: str) -> str:
         str: A string describing the current weather.
     """
 
+    await asyncio.sleep(3)  # Simulate API delay
+
     weather_data = {
         "NYC": "sunny, 75°F",
         "SFO": "foggy, 60°F",
         "AMS": "cloudy, 55°F"
     }
 
-    return f"The current weather in {location} is {weather_data.get(location, 'unknown')}."
-
+    return f"{datetime.now()} - The current weather in {location} is {weather_data.get(location, 'unknown')}."
 
 
 client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
