@@ -31,6 +31,7 @@ client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
 model = OpenAIChatCompletionsModel(openai_client=client, model="gpt-4.1")
 session = SQLiteSession("conversation_123")
 
+
 @function_tool
 async def search(query: str, top_k: int = 1) -> str:
     """Mimicks a search engine for information based on the query.
@@ -77,7 +78,11 @@ rag_agent = Agent(
   model=model,
   output_type=AgentOutput,
   tools = [search],
-  model_settings=ModelSettings(tool_choice = "required")
+  model_settings=ModelSettings(
+      tool_choice = "required",
+      top_k = 5,
+      max_tokens = 1000
+    )
 )
 
 

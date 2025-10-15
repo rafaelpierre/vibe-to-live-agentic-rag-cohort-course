@@ -36,14 +36,13 @@ async def startup_event():
     # TODO: Initialize the RAG agent
     # Hint: Use create_rag_agent() function
     # rag_agent = create_rag_agent()
-    print(f"🚀 {settings.app_name} starting up...")
     print("⚠️  TODO: Initialize RAG agent in startup_event()")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown."""
-    print(f"👋 {settings.app_name} shutting down...")
+    print(f"👋 Shutting down...")
 
 
 @app.get("/", response_model=HealthResponse)
@@ -96,4 +95,4 @@ async def chat(request: ChatRequest) -> ChatResponse:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=settings.debug)
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000)

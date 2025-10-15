@@ -4,6 +4,7 @@ from openai import AsyncOpenAI
 from agents import OpenAIChatCompletionsModel
 import os
 
+
 # configure the Phoenix tracer
 tracer_provider = register(
   project_name="agents", # Default is 'default'
