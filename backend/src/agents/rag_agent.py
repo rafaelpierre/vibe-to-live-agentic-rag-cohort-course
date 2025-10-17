@@ -1,31 +1,40 @@
-import asyncio
-
-from agents import Agent, Runner, OpenAIChatCompletionsModel, set_tracing_disabled
-from openai import AsyncOpenAI
+import logging
+from textwrap import dedent
 import os
+from agents import (
+    Agent,
+    OpenAIChatCompletionsModel,
+    OpenAIChatCompletionsModel,
+    set_tracing_disabled,
+    function_tool,
+    ModelSettings
+)
+from openai import AsyncOpenAI
+from src.tools.vector_search import search_knowledge_base
+from src.agents.models import AgentResponse
 
-set_tracing_disabled(True)
 
 client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
 model = OpenAIChatCompletionsModel(openai_client=client, model="gpt-4.1")
 
-# The agent below should answer questions related to Federal Reserve speeches.
-# It is still incomplete:
-# - Add specific instructions for the agent to follow when answering questions.
-# - Add a function tool that performs vector search, and pass it to the agent
-# - Tip: there are different function tool execution modes
 
-async def main():
-    agent = Agent(
-        name="FedSpeechAgent",
-        instructions="",
-        model=model
-    )
+@function_tool
+async def search(query: str) -> str:
+    """Perform semantic search on Fed speeches collection."""
+    results = search_knowledge_base(query)
+    return results
 
-    result = await Runner.run(agent, "What's the fed overview about monetary policy as of August 2025?")
-    return result.final_output
 
-if __name__ == "__main__":
-    
-    result = asyncio.run(main())
-    print(result)
+agent = Agent(
+    name="FedSpeechAgent",
+    instructions=dedent(
+        """
+        Use the provided functions to answer questions about Federal Reserve speeches.
+        Always cite your sources from the search results.
+        """,
+    ),
+    model=model,
+    tools=[search],
+    model_settings=ModelSettings(tool_choice = "search"),
+    output_type=AgentResponse
+)
