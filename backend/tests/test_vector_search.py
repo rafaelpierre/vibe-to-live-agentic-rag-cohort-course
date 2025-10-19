@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from tools.vector_search import VectorSearchTool, search_knowledge_base
+from src.tools.vector_search import VectorSearchTool, search_knowledge_base
 
 
 # Fixtures
