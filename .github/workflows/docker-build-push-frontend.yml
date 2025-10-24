@@ -68,11 +68,10 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          no-cache: true
           build-args: |
-            VITE_API_URL=${{ secrets.VITE_API_URL || 'http://localhost:8000' }}
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
 
       - name: Generate artifact attestation
         if: github.event_name != 'pull_request'
