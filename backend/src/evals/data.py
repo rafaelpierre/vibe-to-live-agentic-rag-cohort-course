@@ -13,7 +13,7 @@ client = Client(
     api_key = os.getenv("PHOENIX_API_KEY")
 )
 
-def get_data(project_name: str = "fast_api_agent", debug: bool = False):
+def get_data(project_name: str = "fast_api_agent", span_kind: str = "CHAIN", debug: bool = False):
     """
     Retrieve spans data from Phoenix/Arize for a given project.
     
@@ -29,18 +29,17 @@ def get_data(project_name: str = "fast_api_agent", debug: bool = False):
         ValueError: If the project doesn't exist or query is invalid
     """
     try:
-        # Get all spans first (this works)
-        #query = SpanQuery()
         query = (
             SpanQuery()
             .select("input.value", "output.value")
+            .where(f"span_kind == '{span_kind}'")
         )
         
         data = client.spans.get_spans_dataframe(
             query = query,
             project_name=project_name,
             root_spans_only=True
-        )
+        ).dropna()
         
         return data
         
@@ -50,3 +49,14 @@ def get_data(project_name: str = "fast_api_agent", debug: bool = False):
     except Exception as e:
         logger.error(f"Unexpected error retrieving data: {e}")
         raise
+
+
+def create_dataset():
+    """
+    Create a dataset from spans data for evaluation.
+    
+    Returns:
+        DataFrame containing spans data
+    """
+    data = get_data()
+    return data
