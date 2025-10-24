@@ -1,4 +1,4 @@
-from agents import Runner
+from agents import Runner, InputGuardrailTripwireTriggered
 from src.agent.rag_agent import agent
 from phoenix.otel import register
 from openinference.semconv.trace import SpanAttributes
@@ -28,6 +28,13 @@ async def get_chat_response(prompt: str) -> AgentResponse:
                 span.set_attribute(SpanAttributes.OUTPUT_VALUE, str(result.final_output))
                 span.set_status(StatusCode.OK)
                 return result.final_output
+            except InputGuardrailTripwireTriggered as tripwire:
+                span.set_attribute(SpanAttributes.OUTPUT_VALUE, "Input guardrail tripwire triggered")
+                span.set_status(StatusCode.OK)
+                return AgentResponse(
+                    answer="Sorry, I cannot answer that question as it is not related to economy.",
+                    sources=[]
+                )
             except Exception as e:
                 span.set_attribute(SpanAttributes.OUTPUT_VALUE, f"Error: {str(e)}")
                 span.set_status(StatusCode.ERROR)
