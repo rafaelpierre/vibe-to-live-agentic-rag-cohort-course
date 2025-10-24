@@ -13,21 +13,6 @@ client = Client(
     api_key = os.getenv("PHOENIX_API_KEY")
 )
 
-def get_available_projects():
-    """
-    Get list of available projects from Phoenix/Arize.
-    
-    Returns:
-        List of project names
-    """
-    try:
-        # Try to get projects - this might not be available in all Phoenix versions
-        projects = client.projects.list()
-        return [project.name for project in projects] if hasattr(projects, '__iter__') else []
-    except Exception as e:
-        logger.warning(f"Could not retrieve project list: {e}")
-        return []
-
 def get_data(project_name: str = "fast_api_agent", debug: bool = False):
     """
     Retrieve spans data from Phoenix/Arize for a given project.
