@@ -83,6 +83,7 @@ jobs:
   push:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -109,6 +110,8 @@ jobs:
       - name: Load and push image
         env:
           METADATA: ${{ needs.build.outputs.image-metadata }}
+          MAX_RETRIES: 3
+          RETRY_DELAY: 10
         run: |
           # Load the image from tar file
           docker load --input /tmp/frontend-image.tar
@@ -116,8 +119,31 @@ jobs:
           # Extract tags from metadata
           TAGS=$(echo "$METADATA" | jq -r '.tags[]')
           
-          # Push each tag
+          # Push each tag with retry logic
           for tag in $TAGS; do
             echo "Pushing $tag"
-            docker push "$tag" || (echo "Retrying $tag" && sleep 5 && docker push "$tag")
+            attempt=1
+            success=false
+            
+            while [ $attempt -le $MAX_RETRIES ] && [ "$success" = false ]; do
+              echo "Attempt $attempt of $MAX_RETRIES for $tag"
+              
+              if docker push "$tag"; then
+                echo "✓ Successfully pushed $tag"
+                success=true
+              else
+                echo "✗ Failed to push $tag (attempt $attempt)"
+                
+                if [ $attempt -lt $MAX_RETRIES ]; then
+                  echo "Waiting $RETRY_DELAY seconds before retry..."
+                  sleep $RETRY_DELAY
+                  attempt=$((attempt + 1))
+                else
+                  echo "Failed to push $tag after $MAX_RETRIES attempts"
+                  exit 1
+                fi
+              fi
+            done
           done
+          
+          echo "All tags pushed successfully!"
