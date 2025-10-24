@@ -10,6 +10,12 @@ on:
       - '.github/workflows/docker-build-push-frontend.yml'
     tags:
       - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/docker-build-push-frontend.yml'
   workflow_dispatch:
 
 env:
