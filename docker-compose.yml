@@ -1,0 +1,83 @@
+services:
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-api
+    ports:
+      - "8000:8000"
+    environment:
+      # OpenAI Configuration
+      - OPENAI_API_KEY
+      - OPENAI_API_ENDPOINT
+      
+      # Qdrant Configuration
+      - QDRANT_URL
+      - QDRANT_API_KEY
+      
+      # Phoenix/Arize Configuration
+      - PHOENIX_API_KEY
+      - PHOENIX_COLLECTOR_ENDPOINT
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-https://crispy-halibut-97q7vvv6w66c7479-8000.app.github.dev}
+    container_name: frontend
+    ports:
+      - "3000:80"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    
+    networks:
+      - app-network
+    
+    depends_on:
+      backend-api:
+        condition: service_healthy
+
+networks:
+  app-network:
+    name: agentic-rag-network
+    driver: bridge
