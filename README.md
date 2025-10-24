@@ -4,6 +4,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-Agents%20SDK-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-DC244C?style=for-the-badge&logo=qdrant&logoColor=white)
@@ -131,38 +133,64 @@ graph TD
 
 ## 🗂️ Project Structure
 
-The repository structure evolves each week as you add more capabilities:
+The repository contains a complete production-ready AI agent system with the following structure:
 
-**Week 1:**
 ```
-production-ai-agents/
-├── 📁 src/                      # Core application code
-│   ├── main.py                  # FastAPI entry point
-│   ├── config.py                # Configuration
-│   ├── 📁 agents/               # Agent implementations
-│   └── 📁 tools/                # Agent tools (vector search, etc.)
-├── 📁 examples/                 # Learning examples
+vibe-to-live-agentic-rag-cohort-course/
+├── 📁 backend/                  # Backend application
+│   ├── Dockerfile               # Backend container configuration
+│   ├── pyproject.toml           # Backend dependencies (uv)
+│   ├── 📁 src/                  # Core application code
+│   │   ├── cli.py               # Command-line interface
+│   │   ├── 📁 agent/            # Agent implementations
+│   │   │   ├── models.py        # Data models
+│   │   │   └── rag_agent.py     # RAG agent logic
+│   │   ├── 📁 evals/            # Evaluation framework
+│   │   │   ├── data.py          # Evaluation data management
+│   │   │   ├── generate_spans.py # Span generation
+│   │   │   ├── llm_as_judge.py  # LLM-based evaluation
+│   │   │   └── pipeline.py      # Evaluation pipeline
+│   │   ├── 📁 guardrails/       # Input validation & security
+│   │   │   └── input_guardrails.py
+│   │   ├── 📁 tools/            # Agent tools
+│   │   │   └── vector_search.py # Vector search integration
+│   │   └── 📁 web/              # FastAPI application
+│   │       ├── api.py           # API endpoints
+│   │       └── services.py      # Business logic
+│   └── 📁 tests/                # Backend tests
+├── 📁 frontend/                 # React + TypeScript frontend application
+│   ├── Dockerfile               # Frontend container configuration
+│   ├── package.json             # Frontend dependencies (npm)
+│   └── 📁 src/                  # Frontend source code
+│       ├── App.tsx              # Main app component
+│       ├── api.ts               # API client
+│       └── 📁 components/       # UI components
+├── 📁 examples/                 # Learning examples & tutorials
+│   ├── 01_openai_agents_hello_world.py
+│   ├── 02_qdrant_search.py
+│   ├── 03_openai_agents_tool_call.py
+│   ├── 03.1_openai_agents_rag.py
+│   ├── 04_fastapi_function.py
+│   ├── 05_phoenix_arize_example.py
+│   ├── 06_parallel_tool_calls.py
+│   ├── 07_single_agent.py
+│   └── 08_multiagent.py
 ├── 📁 data/                     # Sample documents
-├── 📁 scripts/                  # Setup and utility scripts
-└── 📁 tests/                    # Tests
+│   └── fed_speeches/            # Federal Reserve speeches dataset
+├── 📁 scripts/                  # Utility scripts
+│   └── data_pipeline/           # Data ingestion scripts
+│       ├── ingest_fed_speeches.py
+│       └── ingest_fed_speeches_overlapping.py
+└── docker-compose.yml           # Multi-container orchestration
 ```
 
-**Week 2** adds:
-- Multi-agent orchestration patterns
-- `src/agents/router_agent.py` - Intent classification
-- `src/agents/synthesis_agent.py` - Response generation
-- `src/observability/` - Phoenix Arize integration
-
-**Week 3** adds:
-- `src/guardrails/` - Security and validation
-- `.github/workflows/` - CI/CD pipelines
-- Azure deployment configurations
-
-**Week 4** varies:
-- Custom agents based on your capstone project
-- Advanced features (memory, caching, etc.)
-
-> **View full structure:** Check each branch to see how the project evolves.
+**Key Components:**
+- **Backend**: FastAPI-based REST API with OpenAI Agents SDK integration
+- **Frontend**: Modern React + TypeScript chat interface built with Vite
+- **Evaluation**: LLM-as-a-Judge framework for quality assessment
+- **Guardrails**: Input validation and security checks
+- **Observability**: Integration with Phoenix Arize for monitoring
+- **Examples**: Standalone scripts demonstrating key concepts
 
 ---
 
@@ -243,47 +271,6 @@ uv run python examples/01_openai_agents_hello_world.py
 
 ---
 
-## 🎯 Current Week Assignment
-
-> **Note:** Assignment details vary by branch. Switch to the appropriate week's branch to see specific requirements.
-
-### Week 1 Assignment: Build a RAG Agent
-
-**Your Mission:**
-
-Build a **RAG agent** that can answer questions about a knowledge base using:
-1. OpenAI Agents SDK for agent orchestration
-2. Qdrant for vector search
-3. FastAPI for the REST API
-
----
-
-## 🎓 What's Next?
-
-After completing each week, advance to the next branch:
-
-```bash
-# Completed Week 1? Move to Week 2:
-git checkout week2
-
-# Completed Week 2? Move to Week 3:
-git checkout week3
-
-# Ready for your capstone?
-git checkout week4
-```
-
-Each week builds on the previous, so make sure to complete assignments in order!
-
-**Want the full experience?** [Join the course at buildingaiagents.com](https://buildingaiagents.com) for:
-- Live instruction and Q&A sessions
-- 1-on-1 mentorship with Rafael Pierre
-- Slack community support
-- $400 in free OpenAI credits
-- Certificate of completion
-
----
-
 ## 🤝 Getting Help
 
 ### During the Course
@@ -294,7 +281,6 @@ Each week builds on the previous, so make sure to complete assignments in order!
 ### Self-Study
 
 - Check the `examples/` folder for reference implementations
-- Review the troubleshooting section above
 - Open an issue in this repository
 
 ---
@@ -361,6 +347,6 @@ This repository is part of **[From Vibe to Live: Build and Deploy Production AI 
 
 **Built with ❤️ for production AI**
 
-[Course](https://buildingaiagents.com) • [Examples](#learning-resources) • [Troubleshooting](#troubleshooting)
+[Course](https://buildingaiagents.com) • [Examples](#learning-resources) • [Getting Help](#getting-help)
 
 </div>
