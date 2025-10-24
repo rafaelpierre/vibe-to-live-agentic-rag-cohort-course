@@ -1,0 +1,126 @@
+.messageWrapper {
+  display: flex;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messageWrapper.user {
+  justify-content: flex-end;
+}
+
+.messageWrapper.assistant {
+  justify-content: flex-start;
+}
+
+.message {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 80%;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.user .avatar {
+  background: var(--color-purple-dark);
+  border-color: var(--color-purple-primary);
+  color: white;
+}
+
+.content {
+  flex: 1;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.user .content {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-purple-primary);
+  box-shadow: var(--shadow-purple);
+}
+
+.text {
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 1.25rem 0;
+}
+
+.sources {
+  margin-top: 0.5rem;
+}
+
+.sourcesTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-purple-light);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sourcesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sourcesList li {
+  padding-left: 0;
+}
+
+.sourceLink {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.sourceLink:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-purple-light);
+  text-decoration: none;
+}
+
+.sourceLink::before {
+  content: '🔗';
+  font-size: 0.875rem;
+}
