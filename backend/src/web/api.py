@@ -17,5 +17,4 @@ async def health():
 
 @app.post("/chat")
 async def chat(request: ChatRequest) -> AgentResponse:
-    
-    await get_chat_response(prompt=request.message)
+    return await get_chat_response(prompt=request.message)

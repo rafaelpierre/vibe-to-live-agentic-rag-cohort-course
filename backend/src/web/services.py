@@ -31,3 +31,4 @@ async def get_chat_response(prompt: str) -> AgentResponse:
             except Exception as e:
                 span.set_attribute(SpanAttributes.OUTPUT_VALUE, f"Error: {str(e)}")
                 span.set_status(StatusCode.ERROR)
+                return AgentResponse(answer=f"Error: {str(e)}", sources=[])
