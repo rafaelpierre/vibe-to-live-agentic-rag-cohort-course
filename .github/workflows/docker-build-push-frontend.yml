@@ -70,8 +70,30 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           no-cache: true
+          provenance: false
+          sbom: false
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: 1
+
+      - name: Retry push on failure
+        if: failure() && steps.build.outcome == 'failure'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          no-cache: true
+          provenance: false
+          sbom: false
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: 1
 
       - name: Generate artifact attestation
         if: github.event_name != 'pull_request'
