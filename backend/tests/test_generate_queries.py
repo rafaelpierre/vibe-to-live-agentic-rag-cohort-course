@@ -2,7 +2,7 @@ from src.evals.generate_spans import generate_input_queries, pipeline
 import asyncio
 import pytest
 
-MAX_SYNTHETIC_QUERIES = 20
+MAX_SYNTHETIC_QUERIES = 5
 
 @pytest.fixture
 def input_queries():

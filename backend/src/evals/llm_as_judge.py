@@ -1,7 +1,9 @@
 import pandas as pd
 from phoenix.evals import llm_classify, OpenAIModel
-from phoenix.evals.llm import LLM
+from phoenix.client import Client
 from textwrap import dedent
+import os
+
 
 JUDGE_PROMPT_TEMPLATE = dedent("""
     You are a judge that evaluates the relevance of responses given input queries.
@@ -32,7 +34,7 @@ def evaluate_relevance(data: pd.DataFrame) -> pd.DataFrame:
     llm_judge_model = OpenAIModel(
         model = "gpt-4.1",
         default_concurrency=10,
-        base_url="https://api.hexflow.ai"
+        base_url=os.getenv("OPENAI_API_ENDPOINT")
     )
 
     eval_results = llm_classify(
@@ -43,7 +45,22 @@ def evaluate_relevance(data: pd.DataFrame) -> pd.DataFrame:
         rails = JUDGE_RAILS
     )
 
-    return {
-        "labels": eval_results["label"].tolist(),
-        "data": eval_results["explanation"].tolist()
-    }
+    eval_df = pd.concat([data, eval_results], axis=1).set_index("context.span_id")
+    return eval_df
+
+
+def annotate_span_evals(evaluation_results: pd.DataFrame) -> None:
+
+    client = Client(
+        base_url = os.getenv("PHOENIX_COLLECTOR_ENDPOINT"),
+        api_key = os.getenv("PHOENIX_API_KEY")
+    )
+    
+    annotation_ids = client.spans.log_span_annotations_dataframe(
+        dataframe = evaluation_results,
+        annotation_name="relevance",
+        annotator_kind="LLM",
+        sync = True
+    )
+
+    return annotation_ids

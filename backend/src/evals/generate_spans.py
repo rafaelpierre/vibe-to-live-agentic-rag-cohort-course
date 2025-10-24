@@ -19,8 +19,8 @@ async def generate_input_queries(max_queries: int = 20) -> List[str]:
             Agent(
                 name="QueryGenerator",
                 instructions="""
-                    Generate concise and relevant questions about Federal Reserve speeches.
-                    IMPORTANT: your job is to generate questions only, do not provide answers nor any other comment.
+                    Generate a concise and relevant question about Federal Reserve speeches.
+                    IMPORTANT: your job is to generate ONE question only, do not provide answers nor any other comment.
                 """,
                 model=model,
                 model_settings=ModelSettings(temperature=0.7, max_tokens=50)
@@ -41,4 +41,4 @@ async def pipeline(queries: List[str]) -> List[str]:
 
     tasks = [get_chat_response(prompt=query) for query in queries]
     results = await asyncio.gather(*tasks)
-    return results
+    return [str(result) for result in results]
