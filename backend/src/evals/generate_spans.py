@@ -12,8 +12,7 @@ async def generate_input_queries(max_queries: int = 20) -> List[str]:
         max_queries: Maximum number of queries to generate
     """
 
-    queries = []
-    for i in range(max_queries):
+    async def generate_single_query(i: int) -> str:
         prompt = f"Generate a synthetic query {i+1} related to Federal Reserve speeches."
         response = await Runner.run(
             Agent(
@@ -27,9 +26,11 @@ async def generate_input_queries(max_queries: int = 20) -> List[str]:
             ),
             prompt
         )
-        queries.append(response.final_output)
+        return response.final_output
 
-    return queries
+    tasks = [generate_single_query(i) for i in range(max_queries)]
+    queries = await asyncio.gather(*tasks)
+    return list(queries)
 
 
 async def pipeline(queries: List[str]) -> List[str]:
