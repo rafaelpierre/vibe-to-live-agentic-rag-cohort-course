@@ -5,11 +5,11 @@ on:
     branches:
       - main
       - feature/**
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/docker-build-push-frontend.yml'
     tags:
       - 'v*.*.*'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 env:
