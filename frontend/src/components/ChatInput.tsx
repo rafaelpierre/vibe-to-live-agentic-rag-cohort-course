@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
 import styles from './ChatInput.module.css';
 
@@ -11,23 +11,40 @@ interface ChatInputProps {
 
 export function ChatInput({ onSendMessage, disabled = false, value: externalValue, onChange: externalOnChange }: ChatInputProps) {
   const [internalMessage, setInternalMessage] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Use external value if provided, otherwise use internal state
   const message = externalValue !== undefined ? externalValue : internalMessage;
   const setMessage = externalOnChange !== undefined ? externalOnChange : setInternalMessage;
+
+  // Auto-resize textarea
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+    }
+  };
 
   // Sync internal state when external value changes
   useEffect(() => {
     if (externalValue !== undefined) {
       setInternalMessage(externalValue);
     }
-  }, [externalValue]);
+    adjustTextareaHeight();
+  }, [externalValue, message]);
+
+  const handleChange = (value: string) => {
+    setMessage(value);
+    // Trigger height adjustment on next tick
+    setTimeout(adjustTextareaHeight, 0);
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (message.trim() && !disabled) {
       onSendMessage(message.trim());
-      setMessage('');
+      handleChange('');
     }
   };
 
@@ -42,13 +59,13 @@ export function ChatInput({ onSendMessage, disabled = false, value: externalValu
     <form onSubmit={handleSubmit} className={styles.form}>
       <div className={styles.inputWrapper}>
         <textarea
+          ref={textareaRef}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything about Federal Reserve speeches..."
           className={styles.textarea}
           disabled={disabled}
-          rows={1}
         />
         <button
           type="submit"
