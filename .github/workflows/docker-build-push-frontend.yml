@@ -23,13 +23,15 @@ env:
   IMAGE_NAME: ${{ github.repository }}-frontend
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
-      id-token: write
-      attestations: write
+      packages: read
+      
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      image-metadata: ${{ steps.meta.outputs.json }}
       
     steps:
       - name: Checkout repository
@@ -37,13 +39,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -59,46 +54,70 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         id: build
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
           no-cache: true
           provenance: false
           sbom: false
+          outputs: type=docker,dest=/tmp/frontend-image.tar
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
         env:
           BUILDX_NO_DEFAULT_ATTESTATIONS: 1
 
-      - name: Retry push on failure
-        if: failure() && steps.build.outcome == 'failure'
-        uses: docker/build-push-action@v5
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64
-          no-cache: true
-          provenance: false
-          sbom: false
-          build-args: |
-            VITE_API_URL=${{ secrets.VITE_API_URL }}
-        env:
-          BUILDX_NO_DEFAULT_ATTESTATIONS: 1
+          name: frontend-docker-image
+          path: /tmp/frontend-image.tar
+          retention-days: 1
 
-      - name: Generate artifact attestation
-        if: github.event_name != 'pull_request'
-        uses: actions/attest-build-provenance@v1
+  push:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
+          name: frontend-docker-image
+          path: /tmp
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Load and push image
+        env:
+          METADATA: ${{ needs.build.outputs.image-metadata }}
+        run: |
+          # Load the image from tar file
+          docker load --input /tmp/frontend-image.tar
+          
+          # Extract tags from metadata
+          TAGS=$(echo "$METADATA" | jq -r '.tags[]')
+          
+          # Push each tag
+          for tag in $TAGS; do
+            echo "Pushing $tag"
+            docker push "$tag" || (echo "Retrying $tag" && sleep 5 && docker push "$tag")
+          done
