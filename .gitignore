@@ -210,3 +210,5 @@ __marimo__/
 .specstory
 
 *.csv
+
+*.egg-info
