@@ -16,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class ChatRequest(BaseModel):
     message: str
 

@@ -23,35 +23,39 @@ class VectorSearchTool:
     2. Uses FastEmbed (via Qdrant) to automatically generate embeddings
     3. Searches Qdrant for similar documents
     4. Returns relevant chunks with metadata
-    
+
     Note: This implementation uses FastEmbed through Qdrant's query_points method,
     which automatically handles embedding generation on both ingestion and query time.
     """
 
     def __init__(
-        self, 
-        qdrant_url: str = None, 
+        self,
+        qdrant_url: str = None,
         qdrant_api_key: str = None,
         collection_name: str = None,
-        model_name: str = "BAAI/bge-small-en"
+        model_name: str = "BAAI/bge-small-en",
     ):
         """
         Initialize Qdrant client with FastEmbed support.
-        
+
         Args:
             qdrant_url: Qdrant server URL (defaults to QDRANT_URL env var)
             qdrant_api_key: Qdrant API key (defaults to QDRANT_API_KEY env var)
             collection_name: Name of the collection (defaults to 'fed_speeches')
             model_name: FastEmbed model name (defaults to 'BAAI/bge-small-en')
         """
-        
+
         self.qdrant_url = os.getenv("QDRANT_URL") if qdrant_url is None else qdrant_url
-        self.qdrant_api_key = os.getenv("QDRANT_API_KEY") if qdrant_api_key is None else qdrant_api_key
+        self.qdrant_api_key = (
+            os.getenv("QDRANT_API_KEY") if qdrant_api_key is None else qdrant_api_key
+        )
 
         if not self.qdrant_url or not self.qdrant_api_key:
             raise ValueError("Both Qdrant URL and API key must be provided.")
 
-        self.qdrant_client = QdrantClient(url=self.qdrant_url, api_key=self.qdrant_api_key)
+        self.qdrant_client = QdrantClient(
+            url=self.qdrant_url, api_key=self.qdrant_api_key
+        )
 
         self.collection_name = "fed_speeches"
         self.model_name = model_name
@@ -71,30 +75,31 @@ class VectorSearchTool:
             - score: Similarity score
         """
 
-
         # Use query_points with Document object for automatic embedding via FastEmbed
         search_results = self.qdrant_client.query_points(
             collection_name=self.collection_name,
             query=models.Document(text=query, model=self.model_name),
-            limit=limit
+            limit=limit,
         ).points
-        
+
         # Format results into a consistent structure
         formatted_results = []
         for result in search_results:
-            formatted_results.append({
-                "content": result.payload.get("document", ""),
-                "metadata": {
-                    "title": result.payload.get("title", ""),
-                    "speaker": result.payload.get("speaker", ""),
-                    "pub_date": result.payload.get("pub_date", ""),
-                    "category": result.payload.get("category", ""),
-                    "url": result.payload.get("url", ""),
-                    "description": result.payload.get("description", ""),
-                },
-                "score": result.score
-            })
-        
+            formatted_results.append(
+                {
+                    "content": result.payload.get("document", ""),
+                    "metadata": {
+                        "title": result.payload.get("title", ""),
+                        "speaker": result.payload.get("speaker", ""),
+                        "pub_date": result.payload.get("pub_date", ""),
+                        "category": result.payload.get("category", ""),
+                        "url": result.payload.get("url", ""),
+                        "description": result.payload.get("description", ""),
+                    },
+                    "score": result.score,
+                }
+            )
+
         return formatted_results
 
 
@@ -111,17 +116,15 @@ def search_knowledge_base(query: str, limit: int = 5) -> str:
     Returns:
         Formatted string with search results
     """
-    
+
     try:
-        
         tool = VectorSearchTool()
         results = tool.search(query, limit=limit)
-        
+
         if not results:
-             return f"No results found for query: '{query}'"
+            return f"No results found for query: '{query}'"
 
         return results
 
     except Exception as e:
         return f"Error searching knowledge base: {str(e)}"
-

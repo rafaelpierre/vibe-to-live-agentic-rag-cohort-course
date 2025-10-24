@@ -5,7 +5,7 @@ from agents import (
     OpenAIChatCompletionsModel,
     OpenAIChatCompletionsModel,
     function_tool,
-    ModelSettings
+    ModelSettings,
 )
 from openai import AsyncOpenAI
 from src.tools.vector_search import search_knowledge_base
@@ -39,7 +39,7 @@ agent = Agent(
     ),
     model=model,
     tools=[search],
-    model_settings=ModelSettings(tool_choice = "search"),
+    model_settings=ModelSettings(tool_choice="search"),
     output_type=AgentResponse,
     input_guardrails=[economy_guardrail],
 )

@@ -1,6 +1,7 @@
 import click
 from .evals.pipeline import run_synthetic_relevance_pipeline
 
+
 @click.group()
 def cli():
     """CLI for running evaluation pipelines."""

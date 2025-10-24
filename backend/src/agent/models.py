@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from textwrap import dedent
 
+
 class AgentResponse(BaseModel):
     answer: str
     sources: list[str]

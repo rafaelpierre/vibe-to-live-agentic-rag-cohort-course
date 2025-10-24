@@ -6,7 +6,7 @@ from agents import (
     RunContextWrapper,
     TResponseInputItem,
     OpenAIChatCompletionsModel,
-    ModelSettings
+    ModelSettings,
 )
 
 from openai import AsyncOpenAI
@@ -16,9 +16,11 @@ from pydantic import BaseModel
 client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
 model = OpenAIChatCompletionsModel(openai_client=client, model="gpt-4.1")
 
+
 class InputGuardrailModel(BaseModel):
     is_economy_related: bool
     reasoning: str
+
 
 guardrail_agent = Agent(
     name="EconomyGuardrailAgent",
@@ -42,17 +44,18 @@ guardrail_agent = Agent(
     """,
     output_type=InputGuardrailModel,
     model=model,
-    model_settings=ModelSettings(temperature=0.0, max_tokens=100)
+    model_settings=ModelSettings(temperature=0.0, max_tokens=100),
 )
 
-@input_guardrail
-async def economy_guardrail(ctx: RunContextWrapper[None], agent: Agent, input: str | list[TResponseInputItem]) -> GuardrailFunctionOutput:
 
+@input_guardrail
+async def economy_guardrail(
+    ctx: RunContextWrapper[None], agent: Agent, input: str | list[TResponseInputItem]
+) -> GuardrailFunctionOutput:
     result = await Runner.run(guardrail_agent, input)
     output: InputGuardrailModel = result.final_output
 
     return GuardrailFunctionOutput(
-        output_info=output, 
+        output_info=output,
         tripwire_triggered=(not output.is_economy_related),
     )
-
