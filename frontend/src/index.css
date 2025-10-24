@@ -5,20 +5,20 @@
 
   color-scheme: dark;
   
-  /* Purple theme colors */
+  /* Mint theme colors */
   --color-bg-primary: #0a0a0f;
   --color-bg-secondary: #13131a;
   --color-bg-tertiary: #1a1a24;
   --color-bg-hover: #22222e;
   
-  --color-purple-primary: #8b5cf6;
-  --color-purple-light: #a78bfa;
-  --color-purple-dark: #7c3aed;
-  --color-purple-glow: rgba(139, 92, 246, 0.3);
+  --color-purple-primary: #34d399;
+  --color-purple-light: #6ee7b7;
+  --color-purple-dark: #10b981;
+  --color-purple-glow: rgba(52, 211, 153, 0.5);
   
-  --color-text-primary: #f8f8f8;
-  --color-text-secondary: #b8b8c0;
-  --color-text-tertiary: #888893;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #c8c8d0;
+  --color-text-tertiary: #9898a3;
   
   --color-border: #2a2a36;
   --color-border-light: #3a3a46;

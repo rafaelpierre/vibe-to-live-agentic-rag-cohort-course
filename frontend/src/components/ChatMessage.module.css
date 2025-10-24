@@ -41,6 +41,7 @@
   justify-content: center;
   color: var(--color-text-secondary);
   flex-shrink: 0;
+  margin-top: 5px;
 }
 
 .user .avatar {
@@ -69,6 +70,9 @@
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: 1.0125rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .divider {
@@ -88,6 +92,8 @@
   margin-bottom: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .sourcesList {

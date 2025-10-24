@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
 import styles from './ChatInput.module.css';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
-export function ChatInput({ onSendMessage, disabled = false }: ChatInputProps) {
-  const [message, setMessage] = useState('');
+export function ChatInput({ onSendMessage, disabled = false, value: externalValue, onChange: externalOnChange }: ChatInputProps) {
+  const [internalMessage, setInternalMessage] = useState('');
+  
+  // Use external value if provided, otherwise use internal state
+  const message = externalValue !== undefined ? externalValue : internalMessage;
+  const setMessage = externalOnChange !== undefined ? externalOnChange : setInternalMessage;
+
+  // Sync internal state when external value changes
+  useEffect(() => {
+    if (externalValue !== undefined) {
+      setInternalMessage(externalValue);
+    }
+  }, [externalValue]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

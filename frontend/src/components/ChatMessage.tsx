@@ -12,9 +12,11 @@ export function ChatMessageComponent({ message }: ChatMessageProps) {
   return (
     <div className={`${styles.messageWrapper} ${isUser ? styles.user : styles.assistant}`}>
       <div className={styles.message}>
-        <div className={styles.avatar}>
-          {isUser ? <User size={20} /> : <Bot size={20} />}
-        </div>
+        {!isUser && (
+          <div className={styles.avatar}>
+            <Bot size={20} />
+          </div>
+        )}
         <div className={styles.content}>
           <div className={styles.text}>
             {message.content}
@@ -43,6 +45,11 @@ export function ChatMessageComponent({ message }: ChatMessageProps) {
             </>
           )}
         </div>
+        {isUser && (
+          <div className={styles.avatar}>
+            <User size={20} />
+          </div>
+        )}
       </div>
     </div>
   );
