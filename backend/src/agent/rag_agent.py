@@ -11,7 +11,7 @@ from agents import (
 )
 from openai import AsyncOpenAI
 from src.tools.vector_search import search_knowledge_base
-from src.agents.models import AgentResponse
+from src.agent.models import AgentResponse
 
 
 client = AsyncOpenAI(base_url=os.getenv("OPENAI_API_ENDPOINT"))
