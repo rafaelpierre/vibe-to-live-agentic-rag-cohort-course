@@ -1,4 +1,5 @@
 import asyncio
+import pandas as pd
 from src.web.services import get_chat_response
 from typing import List
 from src.agent.rag_agent import model
@@ -33,13 +34,26 @@ async def generate_input_queries(max_queries: int = 20) -> List[str]:
     return list(queries)
 
 
-async def pipeline(queries: List[str]) -> List[str]:
+async def generate_responses(queries: List[str]) -> pd.DataFrame:
     """Pipeline for running our agentic loop with synthetic queries as input
 
     Args:
         queries: List of synthetic queries
+        
+    Returns:
+        DataFrame with input queries and output responses
     """
 
     tasks = [get_chat_response(prompt=query) for query in queries]
     results = await asyncio.gather(*tasks)
-    return [str(result) for result in results]
+    
+    # Create DataFrame with the expected structure for evaluation
+    data = []
+    for i, (query, response) in enumerate(zip(queries, results)):
+        data.append({
+            'context.span_id': f'span_{i}',
+            'input.value': query,
+            'output.value': str(response)
+        })
+    
+    return pd.DataFrame(data)

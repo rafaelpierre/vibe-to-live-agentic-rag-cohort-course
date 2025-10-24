@@ -49,14 +49,3 @@ def get_data(project_name: str = "fast_api_agent", span_kind: str = "CHAIN", deb
     except Exception as e:
         logger.error(f"Unexpected error retrieving data: {e}")
         raise
-
-
-def create_dataset():
-    """
-    Create a dataset from spans data for evaluation.
-    
-    Returns:
-        DataFrame containing spans data
-    """
-    data = get_data()
-    return data

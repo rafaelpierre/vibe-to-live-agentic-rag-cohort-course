@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "backend"
 version = "0.1.0"
@@ -7,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
     "arize-phoenix-client>=1.21.0",
     "arize-phoenix-otel>=0.13.1",
+    "click>=8.3.0",
     "fastapi[standard]>=0.118.0",
     "openai-agents>=0.3.3",
     "openinference-instrumentation-openai-agents>=1.3.0",
@@ -17,12 +22,19 @@ dependencies = [
     "uvicorn[standard]>=0.37.0",
 ]
 
+[project.scripts]
+evaluate = "src.cli:cli"
+
 [dependency-groups]
 dev = [
     "arize-phoenix-evals>=2.5.0",
+    "hatchling>=1.27.0",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
     "pytest-cov>=7.0.0",
     "python-dotenv>=1.1.1",
     "ruff>=0.13.3",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

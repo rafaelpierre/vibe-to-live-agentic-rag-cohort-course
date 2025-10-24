@@ -20,7 +20,7 @@ JUDGE_PROMPT_TEMPLATE = dedent("""
 
 JUDGE_RAILS = [str(i) for i in range(1, 6)]
 
-def evaluate_relevance(data: pd.DataFrame) -> pd.DataFrame:
+async def evaluate_relevance(data: pd.DataFrame) -> pd.DataFrame:
     """
     Evaluate spans data using an LLM evaluator.
     
@@ -45,22 +45,40 @@ def evaluate_relevance(data: pd.DataFrame) -> pd.DataFrame:
         rails = JUDGE_RAILS
     )
 
-    eval_df = pd.concat([data, eval_results], axis=1).set_index("context.span_id")
+    # Handle case where eval_results might be a list or other type
+    if isinstance(eval_results, pd.DataFrame):
+        eval_df = pd.concat([data, eval_results], axis=1).set_index("context.span_id")
+    else:
+        # If eval_results is not a DataFrame, convert it
+        if isinstance(eval_results, list):
+            eval_results_df = pd.DataFrame(eval_results)
+        else:
+            eval_results_df = pd.DataFrame([eval_results])
+        eval_df = pd.concat([data, eval_results_df], axis=1).set_index("context.span_id")
+    
     return eval_df
 
 
 def annotate_span_evals(evaluation_results: pd.DataFrame) -> None:
-
-    client = Client(
-        base_url = os.getenv("PHOENIX_COLLECTOR_ENDPOINT"),
-        api_key = os.getenv("PHOENIX_API_KEY")
-    )
-    
-    annotation_ids = client.spans.log_span_annotations_dataframe(
-        dataframe = evaluation_results,
-        annotation_name="relevance",
-        annotator_kind="LLM",
-        sync = True
-    )
-
-    return annotation_ids
+    """
+    Annotate spans with evaluation results in Phoenix.
+    """
+    try:
+        client = Client(
+            base_url = os.getenv("PHOENIX_COLLECTOR_ENDPOINT"),
+            api_key = os.getenv("PHOENIX_API_KEY")
+        )
+        
+        annotation_ids = client.spans.log_span_annotations_dataframe(
+            dataframe = evaluation_results,
+            annotation_name="relevance",
+            annotator_kind="LLM",
+            sync = True
+        )
+        
+        print(f"Successfully annotated {len(annotation_ids)} spans")
+        return annotation_ids
+    except Exception as e:
+        print(f"Warning: Could not annotate spans in Phoenix: {e}")
+        print("Evaluation completed but annotation skipped")
+        return None
